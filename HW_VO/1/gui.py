@@ -2,8 +2,8 @@ import sys
 from PyQt5 import QtWidgets, QtGui, QtCore
 #from PyQt5.QtWidgets import	*
 
-u = "users"
-texts = "texts"
+u = "USERS"
+texts = "                     CHAT SPACE"
 class Gui(QtWidgets.QWidget):
 	
 	def __init__(self):
@@ -16,28 +16,28 @@ class Gui(QtWidgets.QWidget):
 
 	def window(self):
 		#self.setGeometry(self.left, self.top, self.width, self.height)
+		self.l = QtWidgets.QLabel("                  V-O CHAT PROGRAM")
+		self.b = QtWidgets.QPushButton("Enter")
 
 		self.listWidget1 = QtWidgets.QListWidget()
 		self.listWidget1.addItem(u) #u = osman gibi userlari ekleyecek fonk?
 		self.listWidget2 = QtWidgets.QListWidget()
 		self.listWidget2.addItem(texts)
+		self.listWidget1.setFixedWidth(75)
 		self.textBox = QtWidgets.QLineEdit(self)
 
 
-		vertical_layout = QtWidgets.QVBoxLayout()
-		vertical_layout.addStretch()
-		vertical_layout.addWidget(self.listWidget2)
-		vertical_layout.addWidget(self.textBox)
-		vertical_layout.addStretch()
+		H_L = QtWidgets.QVBoxLayout()
+		H_L.addWidget(self.l)
+		H_L.addWidget(self.listWidget2)
+		H_L.addWidget(self.textBox)
+		H_L.addWidget(self.b)
 
-		
-		horizontal_layout = QtWidgets.QHBoxLayout()
-		horizontal_layout.addStretch()
-		horizontal_layout.addLayout(vertical_layout)
-		horizontal_layout.addWidget(self.listWidget1)
-		horizontal_layout.addStretch()
+		V_L = QtWidgets.QHBoxLayout()
+		V_L.addWidget(self.listWidget1)
+		V_L.addLayout(H_L)
 
-		self.setLayout(vertical_layout)
+		self.setLayout(V_L)
 		self.setWindowTitle('Your lovely massage app')
 
 		self.show()
