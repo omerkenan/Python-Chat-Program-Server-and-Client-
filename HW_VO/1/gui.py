@@ -4,6 +4,7 @@ from PyQt5 import QtWidgets, QtGui, QtCore
 
 u = "USERS"
 texts = "                     CHAT SPACE"
+
 class Gui(QtWidgets.QWidget):
 	
 	def __init__(self):
@@ -23,10 +24,10 @@ class Gui(QtWidgets.QWidget):
 		self.listWidget1.addItem(u) #u = osman gibi userlari ekleyecek fonk?
 		self.listWidget2 = QtWidgets.QListWidget()
 		self.listWidget2.addItem(texts)
-		self.listWidget1.setFixedWidth(75)
+		self.listWidget1.setFixedWidth(100)
 		self.textBox = QtWidgets.QLineEdit(self)
-
-
+		
+		#H_L is horizontel layout and V_L is vertical layout
 		H_L = QtWidgets.QVBoxLayout()
 		H_L.addWidget(self.l)
 		H_L.addWidget(self.listWidget2)
