@@ -3,12 +3,8 @@ from PyQt5 import QtWidgets, QtGui, QtCore
 #from PyQt5.QtWidgets import	*
 import socket
 
-
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 u = "USERS"
 texts = "                     CHAT SPACE"
-host = ''
-port = 5555
 
 class Gui(QtWidgets.QWidget):
 	
@@ -33,6 +29,12 @@ class Gui(QtWidgets.QWidget):
         self.listWidget1.setFixedWidth(100)
         self.textBox = QtWidgets.QLineEdit(self)
         
+        action = QtGui.QAction(self)
+        action.setShortcut(QtGui.QKeySequence("W"))
+        self.connect(action, QtCore.SIGNAL("activated()"), 
+        self.pushButtonForward, QtCore.SLOT("animateClick()"))
+        self.addAction(action)
+
         #H_L is horizontel layout and V_L is vertical layout
         H_L = QtWidgets.QVBoxLayout()
         H_L.addWidget(self.l)
@@ -49,37 +51,56 @@ class Gui(QtWidgets.QWidget):
         self.b.clicked.connect(self.on_click)
         self.show()
     
-    #def bind(self):
-   #     try:
-  #          s.bind((host, port))
- #       except socket.error as e:
+#    def bind(self):
+#        try:
+#            s.bind((host, port))
+#        except socket.error as e:
 #            listWidget2.addItem(str(e))
-    def on_click(self):
+    def on_click(self): # this and on_enter function will be unnecessary we should  put these in the send function
         textboxValue = self.textBox.text()
         self.listWidget2.addItem(textboxValue)
         self.textBox.setText("")
+
+    def on_enter(self): # this one needs some pyqt knowledge the idea is when you press enter key it sould trigger our button
+        textboxValue = self.textBox.text()
+
+    def recieve(self):  # it puts massages into the listWidget2
+        while True:
+            try:
+                msg = client_socket.recv(lim).decode("utf8")
+                self.listWidget2.addItem(msg)
+            except OSError:
+                break
+
+    def send(event): # problem is i couldnt make the program stop
+        msg = self.textBox.text()
+        self.textBox.setText("")
+        client_socket.send(bytes(msg, "utf8"))
+        if msg == "{quit}":
+            client_socket.close()
+            #?????sys.exit(app.exec_())
 
 #try:
 #    s.bind((host, port))
 #except socket.error as e:
 #    print(str(e))
-
+#
 #s.listen(5)
-
+#
 #def threaded_client(conn):
-    #conn.send(str.encode("Hi, type your info\n"))
-
-    #while True:
-      #  data = conn.recv(2048)
-     #   reply = 'server output: '+ data.decode('utf-8')
-    #    if not data:
-   #         break
-  #      conn.sendall(str.encode(reply))
- #   conn.close()
-
+#    conn.send(str.encode("Hi, type your info\n"))
+#
+#    while True:
+#        data = conn.recv(2048)
+#        reply = 'server output: '+ data.decode('utf-8')
+#        if not data:
+#            break
+#        conn.sendall(str.encode(reply))
+#    conn.close()
+#
 #while True:
-  #  conn, addr = s.accept()
- #   print('connected to: '+addr[0]+':'+str(addr[1]))
+#    conn, addr = s.accept()
+#    print('connected to: '+addr[0]+':'+str(addr[1]))
 #    start_new_thread(threaded_client, (conn,))
 
 
