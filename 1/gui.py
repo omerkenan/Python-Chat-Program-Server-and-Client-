@@ -29,10 +29,9 @@ class Gui(QtWidgets.QWidget):
         self.listWidget1.setFixedWidth(100)
         self.textBox = QtWidgets.QLineEdit(self)
         
-        action = QtGui.QAction(self)
+        action = QtWidgets.QAction(self)
         action.setShortcut(QtGui.QKeySequence("W"))
-        self.connect(action, QtCore.SIGNAL("activated()"), 
-        self.pushButtonForward, QtCore.SLOT("animateClick()"))
+        self.connect(action, QtCore.SIGNAL("activated()"), self.pushButtonForward, QtCore.SLOT("animateClick()"))
         self.addAction(action)
 
         #H_L is horizontel layout and V_L is vertical layout
@@ -72,7 +71,7 @@ class Gui(QtWidgets.QWidget):
             except OSError:
                 break
 
-    def send(event): # problem is i couldnt make the program stop
+    def send(evsent): # problem is i couldnt make the program stop
         msg = self.textBox.text()
         self.textBox.setText("")
         client_socket.send(bytes(msg, "utf8"))
