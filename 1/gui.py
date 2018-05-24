@@ -2,6 +2,7 @@ import sys
 from PyQt5 import QtWidgets, QtGui, QtCore
 #from PyQt5.QtWidgets import	*
 import socket
+from threading import Thread
 
 u = "USERS"
 texts = "                     CHAT SPACE"
@@ -10,14 +11,9 @@ class Gui(QtWidgets.QWidget):
 	
     def __init__(self):
         super().__init__()
-        #self.top = 10
-        #self.left = 10
-        #self.widht = 400
-        #self.height = 330
         self.window()
     
     def window(self):
-        #self.setGeometry(self.left, self.top, self.width, self.height)
         self.l = QtWidgets.QLabel("                  V-O CHAT PROGRAM")
         self.b = QtWidgets.QPushButton("Enter")
     
@@ -29,10 +25,10 @@ class Gui(QtWidgets.QWidget):
         self.listWidget1.setFixedWidth(100)
         self.textBox = QtWidgets.QLineEdit(self)
         
-        action = QtWidgets.QAction(self)
-        action.setShortcut(QtGui.QKeySequence("W"))
-        self.connect(action, QtCore.SIGNAL("activated()"), self.pushButtonForward, QtCore.SLOT("animateClick()"))
-        self.addAction(action)
+#        action = QtWidgets.QAction(self)
+#        action.setShortcut(QtGui.QKeySequence("W"))
+#        self.connect(action, QtCore.SIGNAL("activated()"), self.pushButtonForward, QtCore.SLOT("animateClick()"))
+#        self.addAction(action)
 
         #H_L is horizontel layout and V_L is vertical layout
         H_L = QtWidgets.QVBoxLayout()
@@ -50,20 +46,20 @@ class Gui(QtWidgets.QWidget):
         self.b.clicked.connect(self.on_click)
         self.show()
     
-#    def bind(self):
-#        try:
-#            s.bind((host, port))
-#        except socket.error as e:
-#            listWidget2.addItem(str(e))
-    def on_click(self): # this and on_enter function will be unnecessary we should  put these in the send function
-        textboxValue = self.textBox.text()
-        self.listWidget2.addItem(textboxValue)
+    def on_click(self):
+        msg = self.textBox.text()
+        def send():
+            self.textBox.setText("")
+            client_socket.send(bytes(msg, "utf8"))
+            if msg == "{quit}":
+                client_socket.close()
+                sys.exit(app.exec_())
+        send()
+        self.listWidget2.addItem(msg)
         self.textBox.setText("")
 
-    def on_enter(self): # this one needs some pyqt knowledge the idea is when you press enter key it sould trigger our button
-        textboxValue = self.textBox.text()
-
-    def recieve(self):  # it puts massages into the listWidget2
+    def recieve(self):
+        global lim
         while True:
             try:
                 msg = client_socket.recv(lim).decode("utf8")
@@ -71,37 +67,22 @@ class Gui(QtWidgets.QWidget):
             except OSError:
                 break
 
-    def send(evsent): # problem is i couldnt make the program stop
-        msg = self.textBox.text()
-        self.textBox.setText("")
-        client_socket.send(bytes(msg, "utf8"))
-        if msg == "{quit}":
-            client_socket.close()
-            #?????sys.exit(app.exec_())
+HOST = input('Enter host: ')
+PORT = input('Enter port: ')
 
-#try:
-#    s.bind((host, port))
-#except socket.error as e:
-#    print(str(e))
-#
-#s.listen(5)
-#
-#def threaded_client(conn):
-#    conn.send(str.encode("Hi, type your info\n"))
-#
-#    while True:
-#        data = conn.recv(2048)
-#        reply = 'server output: '+ data.decode('utf-8')
-#        if not data:
-#            break
-#        conn.sendall(str.encode(reply))
-#    conn.close()
-#
-#while True:
-#    conn, addr = s.accept()
-#    print('connected to: '+addr[0]+':'+str(addr[1]))
-#    start_new_thread(threaded_client, (conn,))
+if not PORT:
+    PORT = 33000
+else:
+    PORT = int(PORT)
 
+lim = 1024
+ADDR = (HOST, PORT)
+
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+client_socket.connect(ADDR)
+
+receive_thread = Thread(target=recieve)
+receive_thread.start()
 
 app = QtWidgets.QApplication(sys.argv)
 a_window = Gui()
