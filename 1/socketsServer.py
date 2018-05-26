@@ -5,7 +5,7 @@ from threading import Thread
 clients = {}
 addresses = {}
 
-HOST = ''
+HOST = '127.0.0.1'
 PORT = 33000
 lim = 1024
 ADDR = (HOST, PORT)
@@ -15,7 +15,7 @@ SERVER.bind(ADDR)
 def connection():
     while True:
         client, client_address = SERVER.accept()
-        print("{}:{} has connected.".format(client_address))
+        print("{}:{} has connected.")#.format(client_address))
         client.send(bytes("HI..."+
                           "Now type your name and press enter!", "utf8"))
         addresses[client] = client_address
@@ -23,17 +23,17 @@ def connection():
 
 def handle_client(client):
     name = client.recv(lim).decode("utf8")
-    welcome = 'Welcome {}! if you ever want to quit, type {quit} to exit.'.format(name)
+    welcome = 'Welcome {}! if you ever want to quit, type quit to exit.'.format(name)
     client.send(bytes(welcome, "utf8"))
     msg = "{} has joined the chat!".format(name)
     broadcast(bytes(msg,"utf8"))
     clients[client] = name
     while True:
         msg = client.recv(lim)
-        if msg != bytes('{quit}',"utf8"):
+        if msg != bytes('quit',"utf8"):
             broadcast(msg,name+": ")
         else:
-            client.send(bytes("{quit}","utf8"))
+            client.send(bytes("quit","utf8"))
             client.close()
             del clients[client]
             broadcast(bytes("{} has eft the chat.".format(name),"utf8"))
