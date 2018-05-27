@@ -15,7 +15,7 @@ SERVER.bind(ADDR)
 def connection():
     while True:
         client, client_address = SERVER.accept()
-        print("{}:{} has connected.")#.format(client_address))
+        print("{}:{} has connected.".format(client_address))
         client.send(bytes("HI..."+
                           "Now type your name and press enter!", "utf8"))
         addresses[client] = client_address

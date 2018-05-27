@@ -18,6 +18,14 @@ class Gui(QtWidgets.QWidget):
         self.l = QtWidgets.QLabel("                  V-O CHAT PROGRAM")
         self.b = QtWidgets.QPushButton("Enter")
 
+        self.listWidget1 = QtWidgets.QListWidget()
+        self.listWidget1.addItem(u) #u = osman gibi userlari ekleyecek fonk?
+        self.listWidget2 = QtWidgets.QListWidget()
+        self.listWidget2.addItem(texts)
+        self.listWidget2.addItem('insert your name please')
+        self.listWidget1.setFixedWidth(100)
+        self.textBox = QtWidgets.QLineEdit(self)
+
         HOST = input('Enter host: ')
         PORT = input('Enter port: ')
         if not PORT:
@@ -31,13 +39,6 @@ class Gui(QtWidgets.QWidget):
         self.receive_thread = Thread(target=self.recieve)
         self.receive_thread.start()
         
-        self.listWidget1 = QtWidgets.QListWidget()
-        self.listWidget1.addItem(u) #u = osman gibi userlari ekleyecek fonk?
-        self.listWidget2 = QtWidgets.QListWidget()
-        self.listWidget2.addItem(texts)
-        self.listWidget2.addItem('insert your name please')
-        self.listWidget1.setFixedWidth(100)
-        self.textBox = QtWidgets.QLineEdit(self)
         
 #        action = QtWidgets.QAction(self)
 #        action.setShortcut(QtGui.QKeySequence("W"))
@@ -69,7 +70,7 @@ class Gui(QtWidgets.QWidget):
                 self.client_socket.close()
                 print("i donnno")
         send()
-        self.listWidget2.addItem(msg)
+        #self.listWidget2.addItem(msg)
         self.textBox.setText("")
 
     def recieve(self):
