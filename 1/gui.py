@@ -26,12 +26,14 @@ class Gui(QtWidgets.QWidget):
         self.listWidget1.setFixedWidth(100)
         self.textBox = QtWidgets.QLineEdit(self)
 
-        HOST = input('Enter host: ')
-        PORT = input('Enter port: ')
-        if not PORT:
-            PORT = 33000
-        else:
-            PORT = int(PORT)
+#        HOST = input('Enter host: ')
+#        PORT = input('Enter port: ')
+#        if not PORT:
+#            PORT = 33000
+#        else:
+#            PORT = int(PORT)
+        HOST = "127.0.0.1"
+        PORT = 33000
         self.lim = 1024
         ADDR = (HOST, PORT)
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -63,6 +65,7 @@ class Gui(QtWidgets.QWidget):
     
     def on_click(self):
         msg = self.textBox.text()
+        
         def send():
             self.textBox.setText("")
             self.client_socket.send(bytes(msg, "utf8"))
@@ -70,13 +73,17 @@ class Gui(QtWidgets.QWidget):
                 self.client_socket.close()
                 print("i donnno")
         send()
-        #self.listWidget2.addItem(msg)
         self.textBox.setText("")
 
     def recieve(self):
+        
         while True:
             try:
                 msg = self.client_socket.recv(self.lim).decode("utf8")
+               # if msg[-5:] == "chat!":
+               #     self.listWidget1.addItem(msg[:5])
+               # else:
+               #     self.listWidget2.addItem(msg)
                 self.listWidget2.addItem(msg)
             except OSError:
                 break
