@@ -1,6 +1,7 @@
 import sys
 import socket
 from threading import Thread
+import pickle
 
 clients = {}
 addresses = {}
@@ -30,15 +31,16 @@ def handle_client(client):
     broadcast(bytes(msg,"utf8"))
 #    broadcast(bytes(name,"utf8"),">")
     clients[client] = name
-    #names.append(clients[client])
+    names.append(clients[client])
+    data_string = pickle.dumps(names)
     while True:
         msg = client.recv(lim)
         if msg != bytes('quit',"utf8"):
-#            if msg == bytes(name,"utf8"):
-#                send_names(bytes(name,"utf8"),">")
-#            else:
-#                broadcast(msg,name+": ")
-            broadcast(msg,name+": ")
+            if msg == bytes("USERS?","utf8"):
+                broadcast(data_string,"USERS!")
+            else:
+                broadcast(msg,name+": ")
+            #broadcast(msg,name+": ")
         else:
             client.send(bytes("quit","utf8"))
             client.close()

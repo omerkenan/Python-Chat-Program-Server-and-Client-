@@ -3,7 +3,7 @@ from PyQt5 import QtWidgets, QtGui, QtCore
 #from PyQt5.QtWidgets import	*
 import socket
 from threading import Thread
-        
+import pickle
 
 u = "USERS"
 texts = "                     CHAT SPACE"
@@ -41,12 +41,6 @@ class Gui(QtWidgets.QWidget):
         self.receive_thread = Thread(target=self.recieve)
         self.receive_thread.start()
         
-        
-#        action = QtWidgets.QAction(self)
-#        action.setShortcut(QtGui.QKeySequence("W"))
-#        self.connect(action, QtCore.SIGNAL("activated()"), self.pushButtonForward, QtCore.SLOT("animateClick()"))
-#        self.addAction(action)
-
         #H_L is horizontel layout and V_L is vertical layout
         H_L = QtWidgets.QVBoxLayout()
         H_L.addWidget(self.l)
@@ -65,26 +59,30 @@ class Gui(QtWidgets.QWidget):
     
     def on_click(self):
         msg = self.textBox.text()
-        
         def send():
             self.textBox.setText("")
             self.client_socket.send(bytes(msg, "utf8"))
-            if msg == "quit":
-                self.client_socket.close()
-                print("i donnno")
+            if msg == "USERS?":
+                self.client_socket.send(bytes(msg,"utf8"))
         send()
         self.textBox.setText("")
 
     def recieve(self):
-        
         while True:
             try:
-                msg = self.client_socket.recv(self.lim).decode("utf8")
-               # if msg[-5:] == "chat!":
-               #     self.listWidget1.addItem(msg[:5])
-               # else:
-               #     self.listWidget2.addItem(msg)
-                self.listWidget2.addItem(msg)
+                msg = self.client_socket.recv(self.lim)
+                if pickle.loads(msg[:6]) == "USERS!":
+                    self.listWidget1.addItem(msg[6:])
+                else:
+                    self.listWidget2.addItem(msg.decode("utf-8")) 
+            except OSError:
+                break
+
+    def ask_name(self):
+        while True:
+            try:
+                question = "" 
+                self.client_socket.send(bytes(name, "utf8"))
             except OSError:
                 break
 
