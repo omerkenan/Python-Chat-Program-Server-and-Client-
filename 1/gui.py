@@ -1,9 +1,8 @@
 import sys
 from PyQt5 import QtWidgets, QtGui, QtCore
-#from PyQt5.QtWidgets import	*
 import socket
 from threading import Thread
-import pickle
+import json
 
 u = "USERS"
 texts = "                     CHAT SPACE"
@@ -37,7 +36,7 @@ class Gui(QtWidgets.QWidget):
         self.lim = 1024
         ADDR = (HOST, PORT)
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.client_socket.connect(ADDR)       
+        self.client_socket.connect(ADDR)
         self.receive_thread = Thread(target=self.recieve)
         self.receive_thread.start()
         
@@ -62,29 +61,26 @@ class Gui(QtWidgets.QWidget):
         def send():
             self.textBox.setText("")
             self.client_socket.send(bytes(msg, "utf8"))
-            if msg == "USERS?":
-                self.client_socket.send(bytes(msg,"utf8"))
         send()
         self.textBox.setText("")
 
     def recieve(self):
         while True:
             try:
-                msg = self.client_socket.recv(self.lim)
-                if pickle.loads(msg[:6]) == "USERS!":
-                    self.listWidget1.addItem(msg[6:])
+                msg = self.client_socket.recv(self.lim).decode("utf-8")
+                if msg[:6] == "USERS!":
+                    self.listWidget1.clear()
+                    list_string = msg[6:]
+                    name_list = json.loads(list_string)
+                    for name in name_list:
+                        self.listWidget1.addItem(name)
+                elif msg[-16:] == "joined the chat!":
+                    self.client_socket.send(bytes("USERS?","utf-8"))
                 else:
-                    self.listWidget2.addItem(msg.decode("utf-8")) 
+                    self.listWidget2.addItem(msg) 
             except OSError:
                 break
 
-    def ask_name(self):
-        while True:
-            try:
-                question = "" 
-                self.client_socket.send(bytes(name, "utf8"))
-            except OSError:
-                break
 
 app = QtWidgets.QApplication(sys.argv)
 a_window = Gui()
