@@ -24,6 +24,7 @@ class Gui(QtWidgets.QWidget):
         self.listWidget2.addItem('insert your name please')
         self.listWidget1.setFixedWidth(100)
         self.textBox = QtWidgets.QLineEdit(self)
+        self.textBox.returnPressed.connect(self.on_click)
 
 #        HOST = input('Enter host: ')
 #        PORT = input('Enter port: ')
