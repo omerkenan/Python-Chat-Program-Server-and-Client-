@@ -20,11 +20,15 @@ class Gui(QtWidgets.QWidget):
         self.listWidget1 = QtWidgets.QListWidget()
         self.listWidget1.addItem(u) #u = osman gibi userlari ekleyecek fonk?
         self.listWidget2 = QtWidgets.QListWidget()
-        self.listWidget2.addItem(texts)
-        self.listWidget2.addItem('insert your name please')
+        #self.listWidget2.addItem(texts)
+        #self.listWidget2.addItem('insert your name please')
         self.listWidget1.setFixedWidth(100)
         self.textBox = QtWidgets.QLineEdit(self)
         self.textBox.returnPressed.connect(self.on_click)
+        self.chat = QtWidgets.QTextEdit()
+        self.chat.setReadOnly(True)
+        self.chat.setText(texts)
+        self.chat.setText('insert your name please')
 
 #        HOST = input('Enter host: ')
 #        PORT = input('Enter port: ')
@@ -44,7 +48,7 @@ class Gui(QtWidgets.QWidget):
         #H_L is horizontel layout and V_L is vertical layout
         H_L = QtWidgets.QVBoxLayout()
         H_L.addWidget(self.l)
-        H_L.addWidget(self.listWidget2)
+        H_L.addWidget(self.chat)
         H_L.addWidget(self.textBox)
         H_L.addWidget(self.b)
     
@@ -78,7 +82,7 @@ class Gui(QtWidgets.QWidget):
                 elif msg[-16:] == "joined the chat!":
                     self.client_socket.send(bytes("USERS?","utf-8"))
                 else:
-                    self.listWidget2.addItem(msg) 
+                    self.chat.setText(msg)
             except OSError:
                 break
 
