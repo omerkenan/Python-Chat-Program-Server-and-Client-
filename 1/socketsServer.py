@@ -44,7 +44,7 @@ def handle_client(client):
             client.send(bytes("quit","utf-8"))
             client.close()
             del clients[client]
-            broadcast(bytes("{} has eft the chat.".format(name),"utf-8"))
+            broadcast(bytes("{} has left the chat.".format(name),"utf-8"))
             break
 
 def broadcast(msg, prefix=""):

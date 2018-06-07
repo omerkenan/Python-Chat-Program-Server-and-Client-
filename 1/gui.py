@@ -14,12 +14,13 @@ class Gui(QtWidgets.QWidget):
         self.window()
 
     def window(self):
-        self.l = QtWidgets.QLabel("                  V-O CHAT PROGRAM")
+        self.l = QtWidgets.QLabel("                               V-O CHAT PROGRAM")
+        self.l2 = QtWidgets.QLabel("       USERS")
         self.b = QtWidgets.QPushButton("Enter")
 
         self.listWidget1 = QtWidgets.QListWidget()
-        self.listWidget1.addItem(u) #u = osman gibi userlari ekleyecek fonk?
-        self.listWidget2 = QtWidgets.QListWidget()
+        #u = osman gibi userlari ekleyecek fonk?
+        #self.listWidget2 = QtWidgets.QListWidget()
         #self.listWidget2.addItem(texts)
         #self.listWidget2.addItem('insert your name please')
         self.listWidget1.setFixedWidth(100)
@@ -51,13 +52,18 @@ class Gui(QtWidgets.QWidget):
         H_L.addWidget(self.chat)
         H_L.addWidget(self.textBox)
         H_L.addWidget(self.b)
+
+        H_L2 = QtWidgets.QVBoxLayout()
+        H_L2.addWidget(self.l2)
+        H_L2.addWidget(self.listWidget1)
     
         V_L = QtWidgets.QHBoxLayout()
-        V_L.addWidget(self.listWidget1)
+        V_L.addLayout(H_L2)
         V_L.addLayout(H_L)
     
         self.setLayout(V_L)
         self.setWindowTitle('Your lovely massage app')
+        self.setGeometry(500,500,500,500)
         self.b.clicked.connect(self.on_click)
         self.show()
     
@@ -82,7 +88,7 @@ class Gui(QtWidgets.QWidget):
                 elif msg[-16:] == "joined the chat!":
                     self.client_socket.send(bytes("USERS?","utf-8"))
                 else:
-                    self.chat.setText(msg)
+                    self.chat.append(msg)
             except OSError:
                 break
 
