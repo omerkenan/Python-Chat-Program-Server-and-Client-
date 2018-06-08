@@ -33,7 +33,7 @@ def handle_client(client):
     names.append(clients[client])
     while True:
         msg = client.recv(lim)
-        if msg != bytes('quit',"utf-8"):
+        if msg != bytes('...quit...',"utf-8"):
             if msg == bytes("USERS?","utf-8"):
                 real_list = json.dumps(names)
                 string_list = bytes("USERS!","utf-8") + bytes(real_list,"utf-8")
@@ -51,6 +51,8 @@ def broadcast(msg, prefix=""):
     for sock in clients:
         sock.send(bytes(prefix, "utf-8")+msg)
 
+def people(people_file):
+    pass
 
 if __name__ == "__main__":
     SERVER.listen(5)  # Listens for 5 connections at max.

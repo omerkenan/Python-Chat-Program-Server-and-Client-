@@ -4,6 +4,37 @@ import socket
 from threading import Thread
 import json
 
+class sing_in_window(QtWidgets.QWidget):
+
+    def __init__(self):
+        super().__init__()
+        self.UI()
+
+    def UI(self):
+        self.sing_in_button = QtWidgets.QPushButton("sing in")
+        self.sing_up_button = QtWidgets.QPushButton("sing up")
+        self.name_and_surname_text = QtWidgets.QLineEdit(self)
+        self.password = QtWidgets.QLineEdit(self)
+
+        some_layout = QtWidgets.QHBoxLayout()
+        some_layout.addWidget(self.name_and_surname_text)
+        some_layout.addWidget(self.password)
+        some_layout.addWidget(self.sing_up_button)
+        some_layout.addWidget(self.sing_in_button)
+        self.setLayout(some_layout)
+
+        self.sing_up_button.clicked.connect(self.sing_up)
+        self.sing_in_button.clicked.connect(self.sing_in)
+
+    def sing_in(self):
+        self.SW = Gui()
+        self.SW.show()
+        #print("its working")
+
+    def sing_up(self):
+        #print("awesome")
+        pass
+
 u = "USERS"
 texts = "                     CHAT SPACE"
 
@@ -18,12 +49,9 @@ class Gui(QtWidgets.QWidget):
         self.l2 = QtWidgets.QLabel("       USERS")
         self.b = QtWidgets.QPushButton("Enter")
 
-        self.listWidget1 = QtWidgets.QListWidget()
-        #u = osman gibi userlari ekleyecek fonk?
-        #self.listWidget2 = QtWidgets.QListWidget()
-        #self.listWidget2.addItem(texts)
-        #self.listWidget2.addItem('insert your name please')
-        self.listWidget1.setFixedWidth(100)
+        self.users_list = QtWidgets.QTextEdit()
+        self.users_list.setReadOnly(True)
+        self.users_list.setFixedWidth(100)
         self.textBox = QtWidgets.QLineEdit(self)
         self.textBox.returnPressed.connect(self.on_click)
         self.chat = QtWidgets.QTextEdit()
@@ -55,7 +83,7 @@ class Gui(QtWidgets.QWidget):
 
         H_L2 = QtWidgets.QVBoxLayout()
         H_L2.addWidget(self.l2)
-        H_L2.addWidget(self.listWidget1)
+        H_L2.addWidget(self.users_list)
     
         V_L = QtWidgets.QHBoxLayout()
         V_L.addLayout(H_L2)
@@ -65,7 +93,9 @@ class Gui(QtWidgets.QWidget):
         self.setWindowTitle('Your lovely massage app')
         self.setGeometry(500,500,500,500)
         self.b.clicked.connect(self.on_click)
-        self.show()
+
+        quit = QtWidgets.QAction("Quit", self)
+        quit.triggered.connect(self.closeEvent)
     
     def on_click(self):
         msg = self.textBox.text()
@@ -80,11 +110,11 @@ class Gui(QtWidgets.QWidget):
             try:
                 msg = self.client_socket.recv(self.lim).decode("utf-8")
                 if msg[:6] == "USERS!":
-                    self.listWidget1.clear()
+                    #self.listWidget1.clear()
                     list_string = msg[6:]
                     name_list = json.loads(list_string)
                     for name in name_list:
-                        self.listWidget1.addItem(name)
+                        self.users_list.append(name)
                 elif msg[-16:] == "joined the chat!":
                     self.client_socket.send(bytes("USERS?","utf-8"))
                 else:
@@ -92,7 +122,19 @@ class Gui(QtWidgets.QWidget):
             except OSError:
                 break
 
+    def closeEvent(self, event):
+        close = QtWidgets.QMessageBox()
+        close.setText("You sure ???")
+        close.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.Cancel)
+        close = close.exec()
+        if close == QtWidgets.QMessageBox.Yes:
+            event.accept()
+            self.client_socket.send(bytes("...quit...","utf-8"))
+        else:
+            event.ignore()
 
-app = QtWidgets.QApplication(sys.argv)
-a_window = Gui()
-sys.exit(app.exec_())
+if __name__ == '__main__':
+    app = QtWidgets.QApplication(sys.argv)
+    MW = sing_in_window()
+    MW.show()
+    sys.exit(app.exec_())
