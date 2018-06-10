@@ -4,36 +4,54 @@ import socket
 from threading import Thread
 import json
 
-class sing_in_window(QtWidgets.QWidget):
+class sign_in_window(QtWidgets.QWidget):
 
     def __init__(self):
         super().__init__()
         self.UI()
-
+ 
     def UI(self):
-        self.sing_in_button = QtWidgets.QPushButton("sing in")
-        self.sing_up_button = QtWidgets.QPushButton("sing up")
-        self.name_and_surname_text = QtWidgets.QLineEdit(self)
+        self.sign_in_button = QtWidgets.QPushButton("sign in")
+        self.sign_up_button = QtWidgets.QPushButton("sign up then sign in")
+        self.name_text = QtWidgets.QLineEdit(self)
+        self.surname_text = QtWidgets.QLineEdit(self)
         self.password = QtWidgets.QLineEdit(self)
+        self.host_ip = QtWidgets.QLineEdit("aaaaaaaaaaa")
+        self.host_port = QtWidgets.QLineEdit("33000")
 
         some_layout = QtWidgets.QHBoxLayout()
-        some_layout.addWidget(self.name_and_surname_text)
+        some_layout.addWidget(self.name_text)
+        some_layout.addWidget(self.surname_text)
         some_layout.addWidget(self.password)
-        some_layout.addWidget(self.sing_up_button)
-        some_layout.addWidget(self.sing_in_button)
-        self.setLayout(some_layout)
+        some_layout.addWidget(self.sign_up_button)
+        some_layout.addWidget(self.sign_in_button)
+        other_layout = QtWidgets.QHBoxLayout()
+        other_layout.addWidget(self.host_ip)
+        other_layout.addWidget(self.host_port)
+        fin_layout = QtWidgets.QVBoxLayout()
+        fin_layout.addLayout(some_layout)
+        fin_layout.addLayout(other_layout)
+        self.setLayout(fin_layout)
 
-        self.sing_up_button.clicked.connect(self.sing_up)
-        self.sing_in_button.clicked.connect(self.sing_in)
+        self.sign_up_button.clicked.connect(self.sign_up)
+        self.sign_in_button.clicked.connect(self.sign_in)
 
-    def sing_in(self):
+    def sign_in(self):
         self.SW = Gui()
         self.SW.show()
-        #print("its working")
 
-    def sing_up(self):
-        #print("awesome")
+    def sign_up(self):
         pass
+        #name = self.name_text.text()
+        #surname_text = self.surname_text.text()
+        #password = self.password.text()
+
+#    def dealing_with_server(self, a = []):
+#        host = self.host_ip.text()
+#        port = int(self.host_port.text())
+#        a.append(host)
+#        a.append(port)
+#        return a
 
 u = "USERS"
 texts = "                     CHAT SPACE"
@@ -65,6 +83,11 @@ class Gui(QtWidgets.QWidget):
 #            PORT = 33000
 #        else:
 #            PORT = int(PORT)
+        
+        #HOST = "127.0.0.1"
+        #PORT = 33000
+#        a = sign_in_window()
+#        b = a.dealing_with_server()
         HOST = "127.0.0.1"
         PORT = 33000
         self.lim = 1024
@@ -110,7 +133,6 @@ class Gui(QtWidgets.QWidget):
             try:
                 msg = self.client_socket.recv(self.lim).decode("utf-8")
                 if msg[:6] == "USERS!":
-                    #self.listWidget1.clear()
                     list_string = msg[6:]
                     name_list = json.loads(list_string)
                     for name in name_list:
@@ -135,6 +157,6 @@ class Gui(QtWidgets.QWidget):
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
-    MW = sing_in_window()
+    MW = sign_in_window()
     MW.show()
     sys.exit(app.exec_())
