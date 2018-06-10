@@ -17,18 +17,18 @@ SERVER.bind(ADDR)
 def connection():
     while True:
         client, client_address = SERVER.accept()
-        print("{}:{} has connected.".format(client_address[0],client_address[1])) 
+        print("{}:{} has connected.".format(client_address[0],client_address[1]))
         client.send(bytes("HI..."+
-                          "Now type your name and press enter!", "utf-8"))
+                          "Now type your name and press enter!" + "{}:{}".format(client_address[0],client_address[1]), "utf-8"))
         addresses[client] = client_address
         Thread(target=handle_client, args=(client,)).start()
 
 def handle_client(client):
     name = client.recv(lim).decode("utf-8")
-    welcome = 'Welcome {}! if you ever want to quit, type quit to exit.'.format(name)
+    welcome ="{}".format(addresses[client]) + 'Welcome {}! if you ever want to quit, type quit to exit.'.format(name)
     client.send(bytes(welcome, "utf-8"))
     msg = "{} has joined the chat!".format(name)
-    broadcast(bytes(msg,"utf-8"))
+    broadcast(bytes("{}".format(addresses[client])+msg,"utf-8"))
     clients[client] = name
     names.append(clients[client])
     while True:
@@ -39,7 +39,7 @@ def handle_client(client):
                 string_list = bytes("USERS!","utf-8") + bytes(real_list,"utf-8")
                 broadcast(string_list)
             else:
-                broadcast(msg,name + ": ")
+                broadcast("{}".format(addresses[client]) + name + ": " + msg)
         else:
             client.send(bytes("quit","utf-8"))
             client.close()
