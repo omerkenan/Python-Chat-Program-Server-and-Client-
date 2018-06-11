@@ -1,5 +1,6 @@
 import sys
 import socket
+import threading
 from threading import Thread
 import json
 
@@ -22,6 +23,8 @@ def connection():
                           "Now type your name and press enter!", "utf-8"))
         addresses[client] = client_address
         Thread(target=handle_client, args=(client,)).start()
+        #for thread in threading.enumerate(): 
+            #print(thread.name)
 
 def handle_client(client):
     name = client.recv(lim).decode("utf-8")
@@ -39,7 +42,7 @@ def handle_client(client):
                 string_list = bytes("USERS!","utf-8") + bytes(real_list,"utf-8")
                 broadcast(string_list)
             else:
-                broadcast(bytes(name + ":","utf-8") + msg1)
+                broadcast(bytes(name + ":","utf-8") + msg1,exclude=client)
         else:
             #client.send(bytes("quit","utf-8"))
             for i in names:
@@ -56,9 +59,10 @@ def handle_client(client):
             broadcast(string_list)
             break
 
-def broadcast(msg, prefix=""):
+def broadcast(msg, prefix="",exclude=False):
     for sock in clients:
-        sock.send(bytes(prefix, "utf-8")+msg)
+        if (exclude!=sock):
+            sock.send(bytes(prefix, "utf-8")+msg)
 
 def people(people_file):
     pass
