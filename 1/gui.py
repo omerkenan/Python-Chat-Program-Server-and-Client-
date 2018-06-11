@@ -4,34 +4,34 @@ import socket
 from threading import Thread
 import json
 
-class sing_in_window(QtWidgets.QWidget):
+class sign_in_window(QtWidgets.QWidget):
 
     def __init__(self):
         super().__init__()
         self.UI()
 
     def UI(self):
-        self.sing_in_button = QtWidgets.QPushButton("sign in")
-        self.sing_up_button = QtWidgets.QPushButton("sign up")
+        self.sign_in_button = QtWidgets.QPushButton("sign in")
+        self.sign_up_button = QtWidgets.QPushButton("sign up")
         self.name_and_surname_text = QtWidgets.QLineEdit(self)
         self.password = QtWidgets.QLineEdit(self)
 
         some_layout = QtWidgets.QHBoxLayout()
         some_layout.addWidget(self.name_and_surname_text)
         some_layout.addWidget(self.password)
-        some_layout.addWidget(self.sing_up_button)
-        some_layout.addWidget(self.sing_in_button)
+        some_layout.addWidget(self.sign_up_button)
+        some_layout.addWidget(self.sign_in_button)
         self.setLayout(some_layout)
 
-        self.sing_up_button.clicked.connect(self.sing_up)
-        self.sing_in_button.clicked.connect(self.sing_in)
+        self.sign_up_button.clicked.connect(self.sign_up)
+        self.sign_in_button.clicked.connect(self.sign_in)
 
-    def sing_in(self):
+    def sign_in(self):
         self.SW = Gui()
         self.SW.show()
         #print("its working")
 
-    def sing_up(self):
+    def sign_up(self):
         #print("awesome")
         pass
 
@@ -151,6 +151,6 @@ class Gui(QtWidgets.QWidget):
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
-    MW = sing_in_window()
+    MW = sign_in_window()
     MW.show()
     sys.exit(app.exec_())
