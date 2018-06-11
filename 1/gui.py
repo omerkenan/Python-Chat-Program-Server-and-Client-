@@ -11,8 +11,8 @@ class sing_in_window(QtWidgets.QWidget):
         self.UI()
 
     def UI(self):
-        self.sing_in_button = QtWidgets.QPushButton("sing in")
-        self.sing_up_button = QtWidgets.QPushButton("sing up")
+        self.sing_in_button = QtWidgets.QPushButton("sign in")
+        self.sing_up_button = QtWidgets.QPushButton("sign up")
         self.name_and_surname_text = QtWidgets.QLineEdit(self)
         self.password = QtWidgets.QLineEdit(self)
 
