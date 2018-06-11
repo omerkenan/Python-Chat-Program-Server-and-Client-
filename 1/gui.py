@@ -105,6 +105,8 @@ class Gui(QtWidgets.QWidget):
     def on_click(self):
         msg = self.textBox.text()
         def send():
+            textFormatted = '{:>80}'.format(msg)
+            self.chat.append(textFormatted)
             self.textBox.setText("")
             self.client_socket.send(bytes(msg, "utf8"))
         send()
