@@ -58,6 +58,11 @@ class Gui(QtWidgets.QWidget):
         self.chat.setReadOnly(True)
         self.chat.setText(texts)
         self.chat.setText('insert your name please')
+        self.htmlChat ='''
+        <p style='color:red;width:100%;' dir='rtl'>bu yazi sagdan sola</p>
+        <p style='color:blue;width:100%;' dir='ltr'>bu yazi soldan saga</p>
+        '''
+        self.chat.setHtml(self.htmlChat)
 
 #        HOST = input('Enter host: ')
 #        PORT = input('Enter port: ')
