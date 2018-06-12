@@ -28,21 +28,30 @@ def connection():
 
 def handle_client(client):
     name = client.recv(lim).decode("utf-8")
-    welcome ='Welcome {}! if you ever want to quit, type quit to exit.'.format(name)
-    client.send(bytes(welcome, "utf-8"))
-    msg = "{} has joined the chat!".format(name)
-    broadcast(bytes("{}".format(addresses[client])+msg,"utf-8"))
+#    welcome ='Welcome {}! if you ever want to quit, type quit to exit.'.format(name)
+#    client.send(bytes(welcome, "utf-8"))
+#    msg = "{} has joined the chat!".format(name)
+#    broadcast(bytes("{}".format(addresses[client])+msg,"utf-8"))
     clients[client] = name
     names.append(clients[client])
     while True:
-        msg1 = client.recv(lim)
-        if msg1 != bytes('...quit...',"utf-8"):
-            if msg1 == bytes("USERS?","utf-8"):
+        msg = client.recv(lim)
+        print(msg)
+        a = msg.decode("utf-8")[:12] 
+        print(a)
+        if msg != bytes('...quit...',"utf-8"):
+            if msg == bytes("USERS?","utf-8"):
                 real_list = json.dumps(names)
                 string_list = bytes("USERS!","utf-8") + bytes(real_list,"utf-8")
                 broadcast(string_list)
+            elif msg.decode("utf-8")[:5] == ">>>names<<<,":
+                info_list = msg.decode("utf-8")[:12].split(",")
+                user_name = info_list[0]
+                user_nick = info_list[1]
+                user_password = info_list[2]
+                print(user_name)
             else:
-                broadcast(bytes(name + ":","utf-8") + msg1,exclude=client)
+                broadcast(bytes(name + ":","utf-8") + msg,exclude=client)
         else:
             #client.send(bytes("quit","utf-8"))
             for i in names:
