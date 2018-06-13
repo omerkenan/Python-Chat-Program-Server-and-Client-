@@ -27,7 +27,8 @@ def connection():
             #print(thread.name)
 
 def handle_client(client):
-    name = client.recv(lim).decode("utf-8")
+    users_info = client.recv(lim).decode("utf-8").split(",")
+    name = users_info[1]
 #    welcome ='Welcome {}! if you ever want to quit, type quit to exit.'.format(name)
 #    client.send(bytes(welcome, "utf-8"))
 #    msg = "{} has joined the chat!".format(name)
@@ -44,12 +45,6 @@ def handle_client(client):
                 real_list = json.dumps(names)
                 string_list = bytes("USERS!","utf-8") + bytes(real_list,"utf-8")
                 broadcast(string_list)
-            elif msg.decode("utf-8")[:11] == ">>>names<<<,":
-                info_list = msg.decode("utf-8")[:12].split(",")
-                user_name = info_list[0]
-                user_nick = info_list[1]
-                user_password = info_list[2]
-                print(user_name)
             else:
                 broadcast(bytes(name + ":","utf-8") + msg,exclude=client)
         else:

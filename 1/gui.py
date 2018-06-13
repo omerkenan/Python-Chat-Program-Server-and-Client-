@@ -63,7 +63,7 @@ class sign_in_window(QtWidgets.QWidget):
         name_text = self.name_and_surname.text()
         nick_name_text = self.nick_name.text()
         password_text = self.password.text()
-        client_socket.send(bytes(">>>names<<<,"+name_text+","+nick_name_text+","+password_text+"," , "utf8"))
+        client_socket.send(bytes(name_text+","+nick_name_text+","+password_text, "utf8"))
         self.SW = Gui(name_text,nick_name_text,password_text)
         self.SW.show()
 
