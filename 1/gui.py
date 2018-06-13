@@ -20,17 +20,37 @@ class sign_in_window(QtWidgets.QWidget):
     def UI(self):
         self.sign_in_button = QtWidgets.QPushButton("sign in")
         self.sign_up_button = QtWidgets.QPushButton("sign up")
+        self.label1 = QtWidgets.QLabel("Name And Surname")
+        self.label2 = QtWidgets.QLabel("Nickname")
+        self.label3 = QtWidgets.QLabel("Password")
         self.name_and_surname = QtWidgets.QLineEdit(self)
         self.nick_name = QtWidgets.QLineEdit(self)
         self.password = QtWidgets.QLineEdit(self)
 
-        some_layout = QtWidgets.QHBoxLayout()
-        some_layout.addWidget(self.name_and_surname)
-        some_layout.addWidget(self.password)
-        some_layout.addWidget(self.nick_name)
-        some_layout.addWidget(self.sign_up_button)
-        some_layout.addWidget(self.sign_in_button)
-        self.setLayout(some_layout)
+        hor1_box = QtWidgets.QHBoxLayout()
+        hor1_box.addWidget(self.label1)
+        hor1_box.addWidget(self.name_and_surname)
+
+        hor2_box = QtWidgets.QHBoxLayout()
+        hor2_box.addWidget(self.label2)
+        hor2_box.addWidget(self.nick_name)
+
+        hor3_box = QtWidgets.QHBoxLayout()
+        hor3_box.addWidget(self.label3)
+        hor3_box.addWidget(self.password)
+
+        hor_box = QtWidgets.QHBoxLayout()
+        hor_box.addWidget(self.sign_up_button)
+        hor_box.addWidget(self.sign_in_button)
+
+        ver_layout = QtWidgets.QVBoxLayout()
+        ver_layout.addStretch()
+        ver_layout.addLayout(hor1_box)
+        ver_layout.addLayout(hor2_box)
+        ver_layout.addLayout(hor3_box)
+        ver_layout.addLayout(hor_box)
+        ver_layout.addStretch()
+        self.setLayout(ver_layout)
 
         self.sign_up_button.clicked.connect(self.sign_up)
         self.sign_in_button.clicked.connect(self.sign_in)
@@ -120,8 +140,8 @@ class Gui(QtWidgets.QWidget):
     def on_click(self):
         msg = self.textBox.text()
         def send():
-            textFormatted = '{:>80}'.format(msg)
-            self.chat.append(textFormatted)
+            self.htmlChat = """<p style='color:red;width:100%;' dir='rtl'> {} </p>""".format(msg)
+            self.chat.append(self.htmlChat)
             self.textBox.setText("")
             client_socket.send(bytes(msg, "utf8"))
         send()
@@ -139,24 +159,10 @@ class Gui(QtWidgets.QWidget):
                         self.users_list.append(name)
                 elif msg[-16:] == "joined the chat!":
                     client_socket.send(bytes("USERS?","utf-8"))
-                elif msg[:7] == "Welcome":
-                    global my_name
-                    my_name = msg[7:-46]
-                    self.chat.append(msg)
-                elif msg[:5] == "HI...":
                     self.chat.append(msg)
                 else:
-                    msg_name = ""
-                    for i in msg:
-                        if i == ":":
-                            break
-                        else:
-                            msg_name = msg_name + i
-                    if my_name == msg_name:
-                        textFormatted = '                               {}'.format(msg)
-                        self.chat.append(textFormatted)
-                    else:
-                        self.chat.append(msg)
+                    self.htmlChat1 = """<p style='color:blue;width:100%;' dir='ltr'> {} </p>""".format(msg)
+                    self.chat.append(self.htmlChat1)
             except OSError:
                 break
 

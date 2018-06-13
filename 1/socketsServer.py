@@ -31,7 +31,7 @@ def handle_client(client):
 #    welcome ='Welcome {}! if you ever want to quit, type quit to exit.'.format(name)
 #    client.send(bytes(welcome, "utf-8"))
 #    msg = "{} has joined the chat!".format(name)
-#    broadcast(bytes("{}".format(addresses[client])+msg,"utf-8"))
+#    broadcast(bytes(msg,"utf-8"))
     clients[client] = name
     names.append(clients[client])
     while True:
@@ -44,7 +44,7 @@ def handle_client(client):
                 real_list = json.dumps(names)
                 string_list = bytes("USERS!","utf-8") + bytes(real_list,"utf-8")
                 broadcast(string_list)
-            elif msg.decode("utf-8")[:5] == ">>>names<<<,":
+            elif msg.decode("utf-8")[:11] == ">>>names<<<,":
                 info_list = msg.decode("utf-8")[:12].split(",")
                 user_name = info_list[0]
                 user_nick = info_list[1]
