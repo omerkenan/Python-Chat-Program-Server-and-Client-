@@ -93,10 +93,10 @@ class Gui(QtWidgets.QWidget):
         self.chat.setReadOnly(True)
         self.chat.setText(texts)
         self.chat.setText('insert your name please')
-        self.htmlChat ='''
-        <p style='color:red;width:100%;' dir='rtl'>bu yazi sagdan sola</p>
-        <p style='color:blue;width:100%;' dir='ltr'>bu yazi soldan saga</p>
-        '''
+        self.htmlChat = '''
+                <p style='color:red;width:100%;' dir='rtl'>bu yazi sagdan sola</p>
+                <p style='color:blue;width:100%;' dir='ltr'>bu yazi soldan saga</p>
+                '''
         self.chat.setHtml(self.htmlChat)
 
 #        HOST = input('Enter host: ')
@@ -140,8 +140,8 @@ class Gui(QtWidgets.QWidget):
     def on_click(self):
         msg = self.textBox.text()
         def send():
-            self.htmlChat = """<p style='color:red;width:100%;' dir='rtl'> {} </p>""".format(msg)
-            self.chat.append(self.htmlChat)
+            self.htmlChat2 = """<p style='color:red;width:100%;' dir='rtl'> {}</p>""".format(msg)
+            self.chat.append(self.htmlChat2)
             self.textBox.setText("")
             client_socket.send(bytes(msg, "utf8"))
         send()
@@ -161,7 +161,7 @@ class Gui(QtWidgets.QWidget):
                     client_socket.send(bytes("USERS?","utf-8"))
                     self.chat.append(msg)
                 else:
-                    self.htmlChat1 = """<p style='color:blue;width:100%;' dir='ltr'> {} </p>""".format(msg)
+                    self.htmlChat1 = """<p style='color:blue;width:100%;' dir='ltr'> {}</p>""".format(msg)
                     self.chat.append(self.htmlChat1)
             except OSError:
                 break
