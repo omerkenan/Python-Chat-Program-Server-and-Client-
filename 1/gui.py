@@ -88,7 +88,6 @@ class Gui(QtWidgets.QWidget):
         self.users_list.setReadOnly(True)
         self.users_list.setFixedWidth(100)
         self.textBox = QtWidgets.QLineEdit(self)
-        self.textBox.returnPressed.connect(self.on_click)
         self.chat = QtWidgets.QTextEdit()
         self.chat.setReadOnly(True)
         self.chat.setText(texts)
@@ -133,18 +132,19 @@ class Gui(QtWidgets.QWidget):
         self.setWindowTitle('Your lovely massage app')
         self.setGeometry(500,500,500,500)
         self.b.clicked.connect(self.on_click)
+        self.textBox.returnPressed.connect(self.on_click)
 
         quit = QtWidgets.QAction("Quit", self)
         quit.triggered.connect(self.closeEvent)
     
     def on_click(self):
         msg = self.textBox.text()
-        def send():
-            self.htmlChat2 = """<p style='color:red;width:100%;' dir='rtl'> {}</p>""".format(msg)
-            self.chat.append(self.htmlChat2)
-            self.textBox.setText("")
-            client_socket.send(bytes(msg, "utf8"))
-        send()
+        self.htmlChat2 = """<p style='color:red;width:100%;' dir='rtl'> {}</p>""".format(msg)
+        self.htmlChat = self.htmlChat + "\n" +  self.htmlChat2
+        self.chat.setText("")
+        self.chat.setHtml(self.htmlChat)
+        self.textBox.setText("")
+        client_socket.send(bytes(msg, "utf8"))
         self.textBox.setText("")
 
     def recieve(self):
@@ -162,7 +162,9 @@ class Gui(QtWidgets.QWidget):
                     self.chat.append(msg)
                 else:
                     self.htmlChat1 = """<p style='color:blue;width:100%;' dir='ltr'> {}</p>""".format(msg)
-                    self.chat.append(self.htmlChat1)
+                    self.htmlChat = self.htmlChat + "\n" +  self.htmlChat1
+                    self.chat.setText("")
+                    self.chat.setText(self.htmlChat)
             except OSError:
                 break
 
