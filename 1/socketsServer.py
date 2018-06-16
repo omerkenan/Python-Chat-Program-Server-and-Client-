@@ -41,12 +41,12 @@ def handle_client(client):
         if msg != bytes('...quit...',"utf-8"):
             if msg == bytes("USERS?","utf-8"):
                 real_list = json.dumps(names)
-                string_list = bytes("USERS!","utf-8") + bytes(real_list,"utf-8")
+                string_list = bytes("USERS!","utf-8") + bytes(real_list, "utf-8")
                 broadcast(string_list)
             else:
-                broadcast(bytes(name + ":","utf-8") + msg,exclude=client)
+                broadcast(bytes(name + ":", "utf-8") + msg, exclude=client)
         else:
-            #client.send(bytes("quit","utf-8"))
+            #client.send(bytes("quit", "utf-8"))
             for i in names:
                 a = 0
                 if i != clients[client]:
@@ -55,9 +55,9 @@ def handle_client(client):
                     del names[a]
             client.close()
             del clients[client]
-            broadcast(bytes("{} has left the chat.".format(name),"utf-8"))
+            broadcast(bytes("{} has left the chat.".format(name), "utf-8"))
             real_list = json.dumps(names)
-            string_list = bytes("USERS!","utf-8") + bytes(real_list,"utf-8")
+            string_list = bytes("USERS!","utf-8") + bytes(real_list, "utf-8")
             broadcast(string_list)
             break
 
