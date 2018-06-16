@@ -88,15 +88,15 @@ class Gui(QtWidgets.QWidget):
         self.users_list.setReadOnly(True)
         self.users_list.setFixedWidth(100)
         self.textBox = QtWidgets.QLineEdit(self)
-        self.chat = QtWidgets.QTextEdit()
+        self.chat = QtWidgets.QPlainTextEdit()
         self.chat.setReadOnly(True)
-        self.chat.setText(texts)
-        self.chat.setText('insert your name please')
+        self.chat.setPlainText(texts)
+        self.chat.setPlainText('insert your name please')
         self.htmlChat ='''
         <p style='color:red;width:100%;' dir='rtl'>bu yazi sagdan sola</p>
         <p style='color:blue;width:100%;' dir='ltr'>bu yazi soldan saga</p>
         '''
-        self.chat.setHtml(self.htmlChat)
+        self.chat.appendHtml(self.htmlChat)
 
 #        HOST = input('Enter host: ')
 #        PORT = input('Enter port: ')
@@ -140,9 +140,8 @@ class Gui(QtWidgets.QWidget):
     def on_click(self):
         msg = self.textBox.text()
         client_socket.send(bytes(msg, "utf-8"))
-        self.htmlChat2 = """<p style='color:red;width:100%;' dir='rtl'> {} </p>""".format(msg)
-        self.htmlChat = self.htmlChat + "\n" + self.htmlChat2
-        self.chat.setHtml(self.htmlChat)
+        self.htmlChat2 = """<p style='color:red;width:100%;text-align:right;'> {} </p>""".format(msg)
+        self.chat.appendHtml(self.htmlChat2)
         self.textBox.setText("")
 
     def recieve(self):
@@ -157,11 +156,10 @@ class Gui(QtWidgets.QWidget):
                         self.users_list.append(name)
                 elif msg[-16:] == "joined the chat!":
                     client_socket.send(bytes("USERS?","utf-8"))
-                    self.chat.append(msg)
+                    self.chat.appendPlainText(msg)
                 else:
-                    self.htmlChat3 = """<p style='color:blue;width:100%;' dir='ltr'> {} </p>""".format(msg)
-                    self.htmlChat = self.htmlChat + "\n" + self.htmlChat3
-                    self.chat.setHtml(self.htmlChat)
+                    self.htmlChat3 = """<p style='color:blue;width:100%;text-align:left;'> {} </p>""".format(msg)
+                    self.chat.appendHtml(self.htmlChat3)
             except OSError:
                 break
 

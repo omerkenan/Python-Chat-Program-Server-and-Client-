@@ -37,7 +37,7 @@ def handle_client(client):
     names.append(clients[client])
     while True:
         msg = client.recv(lim)
-        a = msg.decode("utf-8")[:12] 
+        a = msg.decode("utf-8")[:12]
         if msg != bytes('...quit...',"utf-8"):
             if msg == bytes("USERS?","utf-8"):
                 real_list = json.dumps(names)
