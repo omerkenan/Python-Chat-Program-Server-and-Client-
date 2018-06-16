@@ -141,11 +141,10 @@ class Gui(QtWidgets.QWidget):
         msg = self.textBox.text()
         self.htmlChat2 = """<p style='color:red;width:100%;' dir='rtl'> {}</p>""".format(msg)
         self.htmlChat = self.htmlChat + "\n" +  self.htmlChat2
-        self.chat.setText("")
+        self.chat.clear()
         self.chat.setHtml(self.htmlChat)
         self.textBox.setText("")
-        client_socket.send(bytes(msg, "utf8"))
-        self.textBox.setText("")
+        client_socket.send(bytes(msg, "utf-8"))
 
     def recieve(self):
         while True:
@@ -159,11 +158,14 @@ class Gui(QtWidgets.QWidget):
                         self.users_list.append(name)
                 elif msg[-16:] == "joined the chat!":
                     client_socket.send(bytes("USERS?","utf-8"))
-                    self.chat.append(msg)
+                    self.htmlChat1 = """<p style='color:blue;width:100%;' dir='ltr'> {}</p>""".format(msg)
+                    self.htmlChat = self.htmlChat + "\n" + self.htmlChat1
+                    self.chat.clear()
+                    self.chat.setHtml(msg)
                 else:
                     self.htmlChat1 = """<p style='color:blue;width:100%;' dir='ltr'> {}</p>""".format(msg)
                     self.htmlChat = self.htmlChat + "\n" +  self.htmlChat1
-                    self.chat.setText("")
+                    self.chat.clear()
                     self.chat.setText(self.htmlChat)
             except OSError:
                 break
