@@ -12,7 +12,7 @@ HOST = '127.0.0.1'
 PORT = 33000
 lim = 2048
 ADDR = (HOST, PORT)
-SERVER = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  
+SERVER = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 SERVER.bind(ADDR)
 
 def connection():
@@ -23,7 +23,7 @@ def connection():
                           "Now type your name and press enter!", "utf-8"))
         addresses[client] = client_address
         Thread(target=handle_client, args=(client,)).start()
-        #for thread in threading.enumerate(): 
+        #for thread in threading.enumerate():
             #print(thread.name)
 
 def handle_client(client):
@@ -78,5 +78,3 @@ if __name__ == "__main__":
     ACCEPT_THREAD.start()  # Starts the infinite loop.
     ACCEPT_THREAD.join()
     SERVER.close()
-
-
