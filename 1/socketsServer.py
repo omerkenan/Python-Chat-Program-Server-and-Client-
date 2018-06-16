@@ -31,15 +31,13 @@ def handle_client(client):
     name = users_info[1]
 #    welcome ='Welcome {}! if you ever want to quit, type quit to exit.'.format(name)
 #    client.send(bytes(welcome, "utf-8"))
-#    msg = "{} has joined the chat!".format(name)
-#    broadcast(bytes(msg,"utf-8"))
+    msg = "{} has joined the chat!".format(name)
+    broadcast(bytes(msg,"utf-8"))
     clients[client] = name
     names.append(clients[client])
     while True:
         msg = client.recv(lim)
-        print(msg)
         a = msg.decode("utf-8")[:12] 
-        print(a)
         if msg != bytes('...quit...',"utf-8"):
             if msg == bytes("USERS?","utf-8"):
                 real_list = json.dumps(names)
