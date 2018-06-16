@@ -9,7 +9,7 @@ addresses = {}
 names = []
 
 HOST = '127.0.0.1'
-PORT = 33000
+PORT = 32000
 lim = 2048
 ADDR = (HOST, PORT)
 SERVER = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
