@@ -140,7 +140,7 @@ class Gui(QtWidgets.QWidget):
     def on_click(self):
         msg = self.textBox.text()
         client_socket.send(bytes(msg, "utf-8"))
-        self.htmlChat2 = """<p style='color:red;width:100%;text-align:right;'> {} </p>""".format(msg)
+        self.htmlChat2 = """<p style='color:red;width:100%;' dir='rtl'> {} </p>""".format(msg)
         self.chat.appendHtml(self.htmlChat2)
         self.textBox.setText("")
 
@@ -158,7 +158,7 @@ class Gui(QtWidgets.QWidget):
                     client_socket.send(bytes("USERS?","utf-8"))
                     self.chat.appendPlainText(msg)
                 else:
-                    self.htmlChat3 = """<p style='color:blue;width:100%;text-align:left;'> {} </p>""".format(msg)
+                    self.htmlChat3 = """<p style='color:blue;width:100%;' dir='ltr'> {} </p>""".format(msg)
                     self.chat.appendHtml(self.htmlChat3)
             except OSError:
                 break
