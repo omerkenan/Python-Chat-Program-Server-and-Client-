@@ -68,7 +68,6 @@ class sign_in_window(QtWidgets.QWidget):
         self.SW.show()
 
 u = "USERS"
-texts = "                     CHAT SPACE"
 
 class Gui(QtWidgets.QWidget):
 	
@@ -80,23 +79,23 @@ class Gui(QtWidgets.QWidget):
         self.window()
 
     def window(self):
-        self.l = QtWidgets.QLabel("                               V-O CHAT PROGRAM")
-        self.l2 = QtWidgets.QLabel("       USERS")
+        self.l = QtWidgets.QLabel("V-O CHAT PROGRAM")
+        self.l2 = QtWidgets.QLabel("USERS")
         self.b = QtWidgets.QPushButton("Enter")
         print(self.name, self.nick, self.passwd)
         self.users_list = QtWidgets.QTextEdit()
         self.users_list.setReadOnly(True)
         self.users_list.setFixedWidth(100)
         self.textBox = QtWidgets.QLineEdit(self)
-        self.chat = QtWidgets.QPlainTextEdit()
+        self.chat = QtWidgets.QTextEdit()
         self.chat.setReadOnly(True)
-        self.chat.setPlainText(texts)
-        self.chat.setPlainText('insert your name please')
-        self.htmlChat ='''
-        <p style='color:red;width:100%;' dir='rtl'>bu yazi sagdan sola</p>
-        <p style='color:blue;width:100%;' dir='ltr'>bu yazi soldan saga</p>
-        '''
-        self.chat.appendHtml(self.htmlChat)
+        #self.chat.setText('insert your name please')
+        #self.cursor = self.chat.textCursor()
+        #self.cursor.setPosition(0)
+        self.chat.setAlignment(QtCore.Qt.AlignLeft)
+        self.chat.append("bu solda")
+        self.chat.setAlignment(QtCore.Qt.AlignRight)
+        self.chat.append("bu sagda")
 
 #        HOST = input('Enter host: ')
 #        PORT = input('Enter port: ')
@@ -110,6 +109,7 @@ class Gui(QtWidgets.QWidget):
 #        ADDR = (HOST, PORT)
 #        self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 #        self.client_socket.connect(ADDR)
+
         self.receive_thread = Thread(target=self.recieve)
         self.receive_thread.start()
         
@@ -140,26 +140,27 @@ class Gui(QtWidgets.QWidget):
     def on_click(self):
         msg = self.textBox.text()
         client_socket.send(bytes(msg, "utf-8"))
-        self.htmlChat2 = """<p style='color:red;width:100%;' dir='rtl'> {} </p>""".format(msg)
-        self.chat.appendHtml(self.htmlChat2)
+        self.chat.setAlignment(QtCore.Qt.AlignRight)
+        self.chat.append(msg)
         self.textBox.setText("")
 
     def recieve(self):
         while True:
             try:
                 msg = client_socket.recv(lim).decode("utf-8")
+                print(msg)
                 if msg[:6] == "USERS!":
-                    #self.listWidget1.clear()
+                    self.users_list.clear()
                     list_string = msg[6:]
                     name_list = json.loads(list_string)
                     for name in name_list:
                         self.users_list.append(name)
-                elif msg[-16:] == "joined the chat!":
-                    client_socket.send(bytes("USERS?","utf-8"))
-                    self.chat.appendPlainText(msg)
+                #elif msg[-16:] == "joined the chat!":
+                #    client_socket.send(bytes("USERS?","utf-8"))
+                #    self.chat.insertHtml(msg)
                 else:
-                    self.htmlChat3 = """<p style='color:blue;width:100%;' dir='ltr'> {} </p>""".format(msg)
-                    self.chat.appendHtml(self.htmlChat3)
+                    self.chat.setAlignment(QtCore.Qt.AlignLeft)
+                    self.chat.append(msg)
             except OSError:
                 break
 

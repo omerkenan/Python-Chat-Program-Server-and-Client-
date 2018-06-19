@@ -19,8 +19,6 @@ def connection():
     while True:
         client, client_address = SERVER.accept()
         print("{}:{} has connected.".format(client_address[0],client_address[1]))
-        client.send(bytes("HI..."+
-                          "Now type your name and press enter!", "utf-8"))
         addresses[client] = client_address
         Thread(target=handle_client, args=(client,)).start()
         #for thread in threading.enumerate():
@@ -38,14 +36,8 @@ def handle_client(client):
     while True:
         msg = client.recv(lim)
         a = msg.decode("utf-8")[:12]
+
         if msg != bytes('...quit...',"utf-8"):
-            if msg == bytes("USERS?","utf-8"):
-                real_list = json.dumps(names)
-                string_list = bytes("USERS!","utf-8") + bytes(real_list, "utf-8")
-                broadcast(string_list)
-            else:
-                broadcast(bytes(name + ":", "utf-8") + msg, exclude=client)
-        else:
             #client.send(bytes("quit", "utf-8"))
             for i in names:
                 a = 0
@@ -60,6 +52,15 @@ def handle_client(client):
             string_list = bytes("USERS!","utf-8") + bytes(real_list, "utf-8")
             broadcast(string_list)
             break
+
+        elif msg == bytes("USERS?", "utf-8"):
+                real_list = json.dumps(names)
+                string_list = bytes("USERS!","utf-8") + bytes(real_list, "utf-8")
+                broadcast(string_list)
+
+        else:
+            broadcast(bytes(name + ":", "utf-8") + msg, exclude=client)
+
 
 def broadcast(msg, prefix="",exclude=False):
     for sock in clients:
