@@ -63,7 +63,7 @@ class sign_in_window(QtWidgets.QWidget):
         name_text = self.name_and_surname.text()
         nick_name_text = self.nick_name.text()
         password_text = self.password.text()
-        client_socket.send(bytes(name_text+","+nick_name_text+","+password_text, "utf8"))
+        client_socket.send(bytes(name_text+","+nick_name_text+","+password_text, "utf-8"))
         self.SW = Gui(name_text,nick_name_text,password_text)
         self.SW.show()
 
@@ -90,12 +90,14 @@ class Gui(QtWidgets.QWidget):
         self.chat = QtWidgets.QTextEdit()
         self.chat.setReadOnly(True)
         #self.chat.setText('insert your name please')
-        #self.cursor = self.chat.textCursor()
-        #self.cursor.setPosition(0)
-        self.chat.setAlignment(QtCore.Qt.AlignLeft)
-        self.chat.append("bu solda")
-        self.chat.setAlignment(QtCore.Qt.AlignRight)
-        self.chat.append("bu sagda")
+        self.cursor = self.chat.textCursor()
+        self.cursor1 = self.users_list.textCursor()
+        self.cursor.setPosition(0)
+        self.cursor1.setPosition(0)
+#        self.chat.setAlignment(QtCore.Qt.AlignLeft)
+#        self.chat.append("bu solda")
+#        self.chat.setAlignment(QtCore.Qt.AlignRight)
+#        self.chat.append("bu sagda")
 
 #        HOST = input('Enter host: ')
 #        PORT = input('Enter port: ')
@@ -139,15 +141,18 @@ class Gui(QtWidgets.QWidget):
     
     def on_click(self):
         msg = self.textBox.text()
-        client_socket.send(bytes(msg, "utf-8"))
+        def snd():
+            self.textBox.setText("")
+            client_socket.send(bytes(msg, "utf-8"))
+        snd()
         self.chat.setAlignment(QtCore.Qt.AlignRight)
         self.chat.append(msg)
-        self.textBox.setText("")
+        self.cursor.movePosition(QtGui.QTextCursor.EndOfLine)
 
     def recieve(self):
         while True:
             try:
-                msg = client_socket.recv(lim).decode("utf-8")
+                msg = client_socket.recv(lim)
                 print(msg)
                 if msg[:6] == "USERS!":
                     self.users_list.clear()
@@ -155,12 +160,14 @@ class Gui(QtWidgets.QWidget):
                     name_list = json.loads(list_string)
                     for name in name_list:
                         self.users_list.append(name)
+                        self.cursor1.movePosition(QtGui.QTextCursor.EndOfLine)
                 #elif msg[-16:] == "joined the chat!":
                 #    client_socket.send(bytes("USERS?","utf-8"))
                 #    self.chat.insertHtml(msg)
                 else:
                     self.chat.setAlignment(QtCore.Qt.AlignLeft)
-                    self.chat.append(msg)
+                    self.chat.append(msg.decode("utf-8"))
+                    self.cursor.movePosition(QtGui.QTextCursor.EndOfLine)
             except OSError:
                 break
 
