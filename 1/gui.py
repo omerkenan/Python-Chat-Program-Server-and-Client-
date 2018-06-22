@@ -56,13 +56,29 @@ class Gui(QtWidgets.QWidget):
         self.textBox.returnPressed.connect(self.on_click)
         self.chat = QtWidgets.QTextEdit()
         self.chat.setReadOnly(True)
-        self.chat.setText(texts)
-        self.chat.setText('insert your name please')
+        #self.chat.setText(texts)
+        #self.chat.setText('insert your name please')
+        self.css='''
+        p.rtl {
+    direction: rtl;
+}
+p.ltr {
+    direction: ltr;
+}
+        '''
+        #self.chat.defaultStyleSheet = self.css
         self.htmlChat ='''
-        <p style='color:red;width:100%;' dir='rtl'>bu yazi sagdan sola</p>
-        <p style='color:blue;width:100%;' dir='ltr'>bu yazi soldan saga</p>
+        <p dir='rtl' style='color:red;width:100%;' >bu yazi sagdan sola</p>
+        <p dir='ltr' style='color:blue;width:100%;' >bu yazi soldan saga</p>
         '''
         self.chat.setHtml(self.htmlChat)
+        
+        for i in range(50):
+            if(i%2==1):
+                self.chat.setHtml(self.chat.toHtml()+"<p dir='ltr' style='color:blue;width:100%;' >bu yazi soldan saga</p>")
+            else:
+                self.chat.setHtml(self.chat.toHtml()+"<p dir='rtl' style='color:red;width:100%;' >bu yazi sagdan sola</p>")
+
 
 #        HOST = input('Enter host: ')
 #        PORT = input('Enter port: ')
@@ -129,7 +145,7 @@ class Gui(QtWidgets.QWidget):
                     my_name = msg[7:-46]
                     self.chat.append(msg)
                 elif msg[:5] == "HI...":
-                    self.chat.append(msg)
+                    self.chat.setHtml(self.chat.toHtml()+"<p dir='rtl' style='color:red;width:100%;' >"+msg+"</p>")
                 else:
                     msg_name = ""
                     for i in msg:
@@ -145,16 +161,16 @@ class Gui(QtWidgets.QWidget):
             except OSError:
                 break
 
-    def closeEvent(self, event):
-        close = QtWidgets.QMessageBox()
-        close.setText("You sure ???")
-        close.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.Cancel)
-        close = close.exec()
-        if close == QtWidgets.QMessageBox.Yes:
-            event.accept()
-            self.client_socket.send(bytes("...quit...","utf-8"))
-        else:
-            event.ignore()
+    # def closeEvent(self, event):
+    #     close = QtWidgets.QMessageBox()
+    #     close.setText("You sure ???")
+    #     close.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.Cancel)
+    #     close = close.exec()
+    #     if close == QtWidgets.QMessageBox.Yes:
+    #         event.accept()
+    #         self.client_socket.send(bytes("...quit...","utf-8"))
+    #     else:
+    #         event.ignore()
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
