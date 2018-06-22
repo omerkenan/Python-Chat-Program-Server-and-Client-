@@ -5,7 +5,7 @@ from threading import Thread
 import json
 
 HOST = "127.0.0.1"
-PORT = 32000
+PORT = 33000
 lim = 1024
 ADDR = (HOST, PORT)
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -87,17 +87,16 @@ class Gui(QtWidgets.QWidget):
         self.users_list.setReadOnly(True)
         self.users_list.setFixedWidth(100)
         self.textBox = QtWidgets.QLineEdit(self)
-        self.chat = QtWidgets.QTextEdit()
+        self.chat = QtWidgets.QTextEdit(self)
         self.chat.setReadOnly(True)
-        #self.chat.setText('insert your name please')
+        self.chat.setText('insert your name please')
         self.cursor = self.chat.textCursor()
         self.cursor1 = self.users_list.textCursor()
-        self.cursor.setPosition(0)
-        self.cursor1.setPosition(0)
 #        self.chat.setAlignment(QtCore.Qt.AlignLeft)
-#        self.chat.append("bu solda")
-#        self.chat.setAlignment(QtCore.Qt.AlignRight)
-#        self.chat.append("bu sagda")
+        self.html1 = """<p style="color:red;" dir="rtl"> bu sağda </p>"""
+        self.cursor.insertHtml(self.html1)
+        self.html2 = """<p style="color:blue;" dir="ltr"> bu solda </p>"""
+        self.cursor.insertHtml(self.html2)
 
 #        HOST = input('Enter host: ')
 #        PORT = input('Enter port: ')
@@ -145,9 +144,9 @@ class Gui(QtWidgets.QWidget):
             self.textBox.setText("")
             client_socket.send(bytes(msg, "utf-8"))
         snd()
-        self.chat.setAlignment(QtCore.Qt.AlignRight)
-        self.chat.append(msg)
-        self.cursor.movePosition(QtGui.QTextCursor.EndOfLine)
+        self.html4 = """<p style="color:red;" dir="rtl"> {} </p>""".format(msg)
+        self.cursor.insertHtml(self.html4)
+        #self.cursor.movePosition(QtGui.QTextCursor.EndOfLine)
 
     def recieve(self):
         while True:
@@ -161,12 +160,15 @@ class Gui(QtWidgets.QWidget):
                     for name in name_list:
                         self.users_list.append(name)
                         self.cursor1.movePosition(QtGui.QTextCursor.EndOfLine)
-                #elif msg[-16:] == "joined the chat!":
-                #    client_socket.send(bytes("USERS?","utf-8"))
-                #    self.chat.insertHtml(msg)
+                elif msg[-16:] == "joined the chat!":
+                    client_socket.send(bytes("USERS?","utf-8"))
+                    mesage = msg.decode("utf-8")
+                    self.html5 = """<p style="color:blue;" dir="ltr"> {} </p>""".format(mesage)
+                    self.cursor.insertHtml(self.html5)
                 else:
-                    self.chat.setAlignment(QtCore.Qt.AlignLeft)
-                    self.chat.append(msg.decode("utf-8"))
+                    mesage = msg.decode("utf-8")
+                    self.html3 = """<p style="color:blue;" dir="ltr"> {} </p>""".format(mesage)
+                    self.cursor.insertHtml(self.html3)
                     self.cursor.movePosition(QtGui.QTextCursor.EndOfLine)
             except OSError:
                 break
