@@ -53,7 +53,7 @@ def handle_client(client):
             broadcast(string_list)
             break
 
-        elif msg == bytes("ANANI...", "utf-8"):
+        elif msg == bytes("nope...", "utf-8"):
                 real_list = json.dumps(names)
                 string_list = bytes("USERS!","utf-8") + bytes(real_list, "utf-8")
                 broadcast(string_list)
