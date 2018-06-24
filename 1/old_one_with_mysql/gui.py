@@ -26,17 +26,17 @@ class Gui(QtWidgets.QWidget):
         self.sign_in_button = QtWidgets.QPushButton("sign in")
         self.listWidget1 = QtWidgets.QListWidget()
         self.listWidget1.addItem(u) #u = osman gibi userlari ekleyecek fonk?
-        self.listWidget2 = QtWidgets.QListWidget()
-        self.listWidget2.addItem(texts)
+        self.chat = QtWidgets.QTextEdit()
+        self.chat.setReadOnly(True)
+        #self.listWidget2.addItem(texts)
         self.listWidget1.setFixedWidth(100)
         self.textBox = QtWidgets.QLineEdit(self)
-        self.textBox.returnPressed.connect(self.on_click)
         self.nick_box = QtWidgets.QLineEdit(self)
         self.password_box = QtWidgets.QLineEdit(self)
 
         HOST = "127.0.0.1"
         PORT = 33000
-        self.lim = 1024
+        self.lim = 2048
         ADDR = (HOST, PORT)
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client_socket.connect(ADDR)
@@ -45,7 +45,7 @@ class Gui(QtWidgets.QWidget):
 
         H_L = QtWidgets.QVBoxLayout()
         H_L.addWidget(self.l)
-        H_L.addWidget(self.listWidget2)
+        H_L.addWidget(self.chat)
         H_L.addWidget(self.textBox)
         H_L.addWidget(self.b)
         H_L_2 = QtWidgets.QVBoxLayout()
@@ -62,6 +62,7 @@ class Gui(QtWidgets.QWidget):
  
         self.setWindowTitle('Your lovely massage app')
         self.b.clicked.connect(self.on_click)
+        self.textBox.returnPressed.connect(self.on_click)
         self.sign_in_button.clicked.connect(self.sign_in)
         self.show()
     
@@ -69,14 +70,13 @@ class Gui(QtWidgets.QWidget):
         nick_name = self.nick_box.text()
         password = self.password_box.text()
         self.client_socket.send(bytes(nick_name+","+password,"utf-8"))
+        del nick_name, password
     
     def on_click(self):
         msg = self.textBox.text()
-        self.listWidget2.addItem(msg)
-        def send():
-            self.textBox.setText("")
-            self.client_socket.send(bytes(msg, "utf8"))
-        send()
+        self.client_socket.send(bytes(msg, "utf-8"))
+        #self.listWidget2.addItem(msg)
+        self.chat.setHtml(self.chat.toHtml()+"<p dir='rtl' style='color:blue;width:100%;' >{}</p>".format(msg))
         self.textBox.setText("")
 
     def recieve(self):
@@ -92,11 +92,14 @@ class Gui(QtWidgets.QWidget):
                 elif msg[-16:] == "joined the chat!":
                     self.client_socket.send(bytes("USERS?","utf-8"))
                 else:
-                    self.listWidget2.addItem(msg) 
+                    return 0 
+                    #self.listWidget2.addItem(msg) 
+                    self.chat.setHtml(self.chat.toHtml()+"<p dir='ltr' style='color:red;width:100%;' >"+msg+"</p>")
             except OSError:
                 break
 
-
+    def thing(self):
+        pass
 app = QtWidgets.QApplication(sys.argv)
 a_window = Gui()
 sys.exit(app.exec_())

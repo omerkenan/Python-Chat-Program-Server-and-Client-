@@ -26,23 +26,25 @@ def handle_client(client):
     name = info[0]
     password = info[1]
     insert_into_db(name, password)
+    print(name)
     clients[client] = name
+    client.send(bytes("hiiiiii","utf-8"))
     names.append(clients[client])
     while True:
         msg = client.recv(lim)
-        if msg != bytes('quit',"utf-8"):
-            if msg == bytes("USERS?","utf-8"):
+        print(msg)
+        if msg == bytes("USERS?","utf-8"):
                 real_list = json.dumps(names)
                 string_list = bytes("USERS!","utf-8") + bytes(real_list,"utf-8")
                 broadcast(string_list)
-            else:
-                broadcast(msg,name + ": ",exclude=client)
-        else:
+        if msg == bytes("quit", "utf-8"):
             client.send(bytes("quit","utf-8"))
             client.close()
             del clients[client]
             broadcast(bytes("{} has eft the chat.".format(name),"utf-8"))
             break
+        else:
+            broadcast(msg,name + ": ",exclude=client)
 
 def broadcast(msg, prefix="",exclude = False):
     for sock in clients:
