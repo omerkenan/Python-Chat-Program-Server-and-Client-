@@ -1,7 +1,7 @@
 import sys, socket, json
 from threading import Thread
-from mysql_dbconfig import read_db_config
-from mysql.connector import MySQLConnection, Error
+#from mysql_dbconfig import read_db_config
+#from mysql.connector import MySQLConnection, Error
 
 clients = {}
 addresses = {}
@@ -25,7 +25,7 @@ def handle_client(client):
     info = client.recv(lim).decode("utf-8").split(",")
     name = info[0]
     password = info[1]
-    insert_into_db(name, password)
+#    insert_into_db(name, password)
     print(name)
     clients[client] = name
     client.send(bytes("hiiiiii","utf-8"))
@@ -52,26 +52,26 @@ def broadcast(msg, prefix="",exclude = False):
             sock.send(bytes(prefix, "utf-8")+msg)
 
 
-def insert_into_db(nick,password):
-    query = "INSERT INTO info(nick,password) " \
-            "VALUES (%s,%s)"
-    args = (nick,password)
-    
-    try:
-        db_config = read_db_config()
-        conn = MySQLConnection(**db_config)
-        cursor = conn.cursor()
-        cursor.execute(query, args)
-        if cursor.lastrowid:
-            print('last insert id', cursor.lastrowid)
-        else:
-            print('last insert id not found')
-        conn.commit
-    except Error as e:
-        print('Error: ',e)
-    finally:
-        cursor.close()
-        conn.close()
+#def insert_into_db(nick,password):
+#    query = "INSERT INTO info(nick,password) " \
+#            "VALUES (%s,%s)"
+#    args = (nick,password)
+#    
+#    try:
+#        db_config = read_db_config()
+#        conn = MySQLConnection(**db_config)
+#        cursor = conn.cursor()
+#        cursor.execute(query, args)
+#        if cursor.lastrowid:
+#            print('last insert id', cursor.lastrowid)
+#        else:
+#            print('last insert id not found')
+#        conn.commit
+#    except Error as e:
+#        print('Error: ',e)
+#    finally:
+#        cursor.close()
+#        conn.close()
 
 if __name__ == "__main__":
     SERVER.listen(5)  # Listens for 5 connections at max.

@@ -28,7 +28,6 @@ class Gui(QtWidgets.QWidget):
         self.listWidget1.addItem(u) #u = osman gibi userlari ekleyecek fonk?
         self.chat = QtWidgets.QTextEdit()
         self.chat.setReadOnly(True)
-        #self.listWidget2.addItem(texts)
         self.listWidget1.setFixedWidth(100)
         self.textBox = QtWidgets.QLineEdit(self)
         self.nick_box = QtWidgets.QLineEdit(self)

@@ -1,8 +1,8 @@
-import sys
+import sys,socket,json
 from PyQt5 import QtWidgets, QtGui, QtCore
-import socket
+import 
 from threading import Thread
-import json
+import 
 
 HOST = "127.0.0.1"
 PORT = 33000
