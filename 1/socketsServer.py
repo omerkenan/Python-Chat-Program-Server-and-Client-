@@ -1,8 +1,7 @@
-import sys
-import socket
-import threading
+import sys, socket, json
 from threading import Thread
-import json
+#from mysql_dbconfig import read_db_config
+#from mysql.connector import MySQLConnection, Error
 
 clients = {}
 addresses = {}
@@ -12,63 +11,67 @@ HOST = '127.0.0.1'
 PORT = 33000
 lim = 2048
 ADDR = (HOST, PORT)
-SERVER = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+SERVER = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  
 SERVER.bind(ADDR)
 
 def connection():
     while True:
         client, client_address = SERVER.accept()
         print("{}:{} has connected.".format(client_address[0],client_address[1]))
+        broadcast(bytes("joined the chat!", "utf-8"))
         addresses[client] = client_address
         Thread(target=handle_client, args=(client,)).start()
-        #for thread in threading.enumerate():
-            #print(thread.name)
 
 def handle_client(client):
-    users_info = client.recv(lim).decode("utf-8").split(",")
-    name = users_info[1]
-#    welcome ='Welcome {}! if you ever want to quit, type quit to exit.'.format(name)
-#    client.send(bytes(welcome, "utf-8"))
-    msg = "{} has joined the chat!".format(name)
-    broadcast(bytes(msg,"utf-8"))
+    info = client.recv(lim).decode("utf-8").split(",")
+    name = info[0]
+    password = info[1]
+#    insert_into_db(name, password)
+    print(name)
     clients[client] = name
     names.append(clients[client])
     while True:
         msg = client.recv(lim)
-        a = msg.decode("utf-8")[:12]
-
-        if msg != bytes('...quit...',"utf-8"):
-            #client.send(bytes("quit", "utf-8"))
-            for i in names:
-                a = 0
-                if i != clients[client]:
-                    a += 1
-                else:
-                    del names[a]
+        print(msg)
+        if msg == bytes("USERS?","utf-8"):
+                real_list = json.dumps(names)
+                string_list = bytes("USERS!","utf-8") + bytes(real_list,"utf-8")
+                broadcast(string_list)
+        elif msg == bytes("quit", "utf-8"):
+            client.send(bytes("quit","utf-8"))
             client.close()
             del clients[client]
-            broadcast(bytes("{} has left the chat.".format(name), "utf-8"))
-            real_list = json.dumps(names)
-            string_list = bytes("USERS!","utf-8") + bytes(real_list, "utf-8")
-            broadcast(string_list)
+            broadcast(bytes("{} has left the chat.".format(name),"utf-8"))
             break
-
-        elif msg == bytes("nope...", "utf-8"):
-                real_list = json.dumps(names)
-                string_list = bytes("USERS!","utf-8") + bytes(real_list, "utf-8")
-                broadcast(string_list)
-
         else:
-            broadcast(bytes(name + ":", "utf-8") + msg, exclude=client)
+            broadcast(msg, name + ": ", exclude=client)
 
-
-def broadcast(msg, prefix="",exclude=False):
+def broadcast(msg, prefix="",exclude = False):
     for sock in clients:
         if (exclude!=sock):
             sock.send(bytes(prefix, "utf-8")+msg)
 
-def people(people_file):
-    pass
+
+#def insert_into_db(nick,password):
+#    query = "INSERT INTO info(nick,password) " \
+#            "VALUES (%s,%s)"
+#    args = (nick,password)
+#    
+#    try:
+#        db_config = read_db_config()
+#        conn = MySQLConnection(**db_config)
+#        cursor = conn.cursor()
+#        cursor.execute(query, args)
+#        if cursor.lastrowid:
+#            print('last insert id', cursor.lastrowid)
+#        else:
+#            print('last insert id not found')
+#        conn.commit
+#    except Error as e:
+#        print('Error: ',e)
+#    finally:
+#        cursor.close()
+#        conn.close()
 
 if __name__ == "__main__":
     SERVER.listen(5)  # Listens for 5 connections at max.
@@ -77,3 +80,5 @@ if __name__ == "__main__":
     ACCEPT_THREAD.start()  # Starts the infinite loop.
     ACCEPT_THREAD.join()
     SERVER.close()
+
+
