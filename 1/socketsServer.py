@@ -50,8 +50,6 @@ def handle_client(client):
         except OSError:
             break
 
-
-
 def broadcast(msg, prefix="",exclude = False):
     for sock in clients:
         if (exclude!=sock):

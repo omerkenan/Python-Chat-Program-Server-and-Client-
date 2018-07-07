@@ -1,13 +1,9 @@
-import sys,socket,json
+import sys
 from PyQt5 import QtWidgets, QtGui, QtCore
 from threading import Thread
+import socket
+import json
 
-#HOST = "127.0.0.1"
-#PORT = 33000
-#lim = 1024
-#ADDR = (HOST, PORT)
-#client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-#client_socket.connect(ADDR)
 
 class Gui(QtWidgets.QWidget):
 	
@@ -28,6 +24,8 @@ class Gui(QtWidgets.QWidget):
         self.textBox = QtWidgets.QLineEdit(self)
         self.nick_box = QtWidgets.QLineEdit("name")
         self.password_box = QtWidgets.QLineEdit("password")
+        self.nick_box = QtWidgets.QLineEdit(self)
+        self.password_box = QtWidgets.QLineEdit(self)
 
         HOST = "127.0.0.1"
         PORT = 33000
@@ -68,6 +66,7 @@ class Gui(QtWidgets.QWidget):
         nick_name = self.nick_box.text()
         password = self.password_box.text()
         self.client_socket.send(bytes(nick_name + "," +password,"utf-8"))
+        self.client_socket.send(bytes(nick_name+","+password,"utf-8"))
         del nick_name, password
     
     def on_click(self):
