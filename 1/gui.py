@@ -1,9 +1,6 @@
-import sys
+import sys, socket, json
 from PyQt5 import QtWidgets, QtGui, QtCore
 from threading import Thread
-import socket
-import json
-
 
 class Gui(QtWidgets.QWidget):
 	
@@ -24,8 +21,8 @@ class Gui(QtWidgets.QWidget):
         self.textBox = QtWidgets.QLineEdit(self)
         self.nick_box = QtWidgets.QLineEdit("name")
         self.password_box = QtWidgets.QLineEdit("password")
-        self.nick_box = QtWidgets.QLineEdit(self)
-        self.password_box = QtWidgets.QLineEdit(self)
+        self.nick_box = QtWidgets.QLineEdit("nick")
+        self.password_box = QtWidgets.QLineEdit("password")
 
         HOST = "127.0.0.1"
         PORT = 33000
@@ -60,13 +57,15 @@ class Gui(QtWidgets.QWidget):
         self.textBox.returnPressed.connect(self.on_click)
         self.sign_in_button.clicked.connect(self.sign_in)
         #self.sign_in_button.clicked.connect(self.recieve)
-        self.show()
+        quit = QtWidgets.QAction("Quit", self)
+        quit.triggered.connect(self.closeEvent)
+        #self.show()
     
     def sign_in(self):
         nick_name = self.nick_box.text()
         password = self.password_box.text()
         self.client_socket.send(bytes(nick_name + "," +password,"utf-8"))
-        self.client_socket.send(bytes(nick_name+","+password,"utf-8"))
+        #self.client_socket.send(bytes(nick_name+","+password,"utf-8"))
         del nick_name, password
     
     def on_click(self):
@@ -95,13 +94,26 @@ class Gui(QtWidgets.QWidget):
             except OSError:
                 break
 
+    def closeEvent(self, event):
+        close = QtWidgets.QMessageBox()
+        close.setText("You sure ???")
+        close.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.Cancel)
+        close = close.exec()
+        if close == QtWidgets.QMessageBox.Yes:
+            event.accept()
+            self.client_socket.send(bytes("...quit...","utf-8"))
+        else:
+            event.ignore()
+
 #    def thing(self):
 #        while True:
 #            self.chat.setHtml(self.thing_list)
 
-
 app = QtWidgets.QApplication(sys.argv)
 a_window = Gui()
-#receive_thread = Thread(target=a_window.recieve)
-#receive_thread.start()
+#def thread():
+#    while True:
+#        a_window.chat.setHtml(a_window.thing_list)
+a_window.show()
+#thread()
 sys.exit(app.exec_())
