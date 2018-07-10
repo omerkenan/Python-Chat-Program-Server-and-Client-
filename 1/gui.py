@@ -102,6 +102,7 @@ class Gui(QtWidgets.QWidget):
         if close == QtWidgets.QMessageBox.Yes:
             event.accept()
             self.client_socket.send(bytes("...quit...","utf-8"))
+            self.client_socket.close()
         else:
             event.ignore()
 

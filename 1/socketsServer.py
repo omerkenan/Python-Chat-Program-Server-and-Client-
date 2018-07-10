@@ -6,8 +6,7 @@ from mysql.connector import MySQLConnection, Error
 clients = {}
 addresses = {}
 names = []
-conn = MySQLConnection(**db_config)
-cursor = conn.cursor()
+
 HOST = '127.0.0.1'
 PORT = 33000
 lim = 2048
@@ -27,7 +26,7 @@ def handle_client(client):
     info = client.recv(lim).decode("utf-8").split(",")
     name = info[0]
     password = info[1]
-    insert_into_db(name, password)
+    insert_into_db(name, password,client)
     print(name)
     clients[client] = name
     client.send(bytes("hiiiiii","utf-8"))
@@ -57,26 +56,30 @@ def broadcast(msg, prefix="",exclude = False):
             sock.send(bytes(prefix, "utf-8")+msg)
 
 
-def insert_into_db(nick,password):
+def insert_into_db(nick,password,client):
     db_config = read_db_config()
-    query1 = "INSERT INTO info(nick,password) " \
-            "VALUES (%s,%s)"
-    query2 = "SELECT * FROM info where nick = '%s'" % (nick))_  \
+    conn = MySQLConnection(**db_config)
+    cursor = conn.cursor(buffered=True)
+    query1 = "INSERT INTO info VALUES (%s,%s)"
+    query2 = "SELECT * FROM info where nick = '%s'" % (nick) 
     args = (nick,password)
-    cursor.execute(query2)
-    data = cursor.fetchall()
-    if not(len(data)>0):
-        cursor.execute(query, args)
-        data = cursor.fetchall()
-        if cursor.lastrowid:
-            print('last insert id', cursor.lastrowid)
-        else:
-            print('last insert id not found')
-        conn.commit
-    else:
-        pass
+    #cursor.execute(query2)
+    #data = cursor.fetchall()
+    #if not(len(data)>0):
+    #    cursor.execute(query1, args)
+    #    #data = cursor.fetchall()
+    #    if cursor.lastrowid:
+    #        print('last insert id', cursor.lastrowid)
+    #    else:
+    #        print('last insert id not found')
+    #    conn.commit
+    #else:
+    #    client.send(bytes("try again","utf-8"))
         #client.send(bytes("nope try again", "utf-8"))
         #client.close()
+    
+    cursor.execute(query1, args)
+    conn.commit
     cursor.close()
     conn.close()
 
