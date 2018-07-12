@@ -1,7 +1,10 @@
 import sys, socket, json
 from threading import Thread
+import signal
+import sys
 from mysql_dbconfig import read_db_config
 from mysql.connector import MySQLConnection, Error
+from pprint import pprint
 
 clients = {}
 addresses = {}
@@ -11,22 +14,25 @@ HOST = '127.0.0.1'
 PORT = 33000
 lim = 2048
 ADDR = (HOST, PORT)
-SERVER = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  
-SERVER.bind(ADDR)
+SOCKET = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  
+SOCKET.bind(ADDR)
 
 def connection():
     while True:
-        client, client_address = SERVER.accept()
-        print("{}:{} has connected.".format(client_address[0],client_address[1])) 
-        broadcast(bytes("joined the chat!", "utf-8"))
-        addresses[client] = client_address
+        client, client_address = SOCKET.accept()
+        print("{}:{} made connection request.".format(client_address[0],client_address[1])) 
+        
+        #broadcast(bytes("joined the chat!", "utf-8"))
+        
         Thread(target=handle_client, args=(client,)).start()
 
 def handle_client(client):
     info = client.recv(lim).decode("utf-8").split(",")
     name = info[0]
     password = info[1]
-    insert_into_db(name, password,client)
+
+    db_first_or_create(name, password)
+
     print(name)
     clients[client] = name
     client.send(bytes("hiiiiii","utf-8"))
@@ -56,39 +62,57 @@ def broadcast(msg, prefix="",exclude = False):
             sock.send(bytes(prefix, "utf-8")+msg)
 
 
-def insert_into_db(nick,password,client):
+def db_first_or_create(nick,password):
     db_config = read_db_config()
     conn = MySQLConnection(**db_config)
     cursor = conn.cursor(buffered=True)
-    query1 = "INSERT INTO info VALUES (%s,%s)"
-    query2 = "SELECT * FROM info where nick = '%s'" % (nick) 
-    args = (nick,password)
-    #cursor.execute(query2)
-    #data = cursor.fetchall()
-    #if not(len(data)>0):
-    #    cursor.execute(query1, args)
-    #    #data = cursor.fetchall()
-    #    if cursor.lastrowid:
-    #        print('last insert id', cursor.lastrowid)
-    #    else:
-    #        print('last insert id not found')
-    #    conn.commit
-    #else:
-    #    client.send(bytes("try again","utf-8"))
-        #client.send(bytes("nope try again", "utf-8"))
-        #client.close()
-    
-    cursor.execute(query1, args)
-    conn.commit
+
+    query1 = "SELECT password FROM info WHERE nick = '%s'" % (nick) 
+    query2 = "INSERT INTO info (nick, password) VALUES (%s,%s)"
+
+    cursor.execute(query1)
+    data = cursor.fetchall()
+
+    if(len(data)==1):
+        if(data[2]==password):
+            print(data)
+            #login oldu
+        else:
+            print("boyle bir nick var ama parola yanlis")
+            #boyle bir nick var ama parola yanlis
+    elif(len(data)>1):
+        print("beklenmedik hata")
+    else:
+        try:
+            cursor.execute(query2,(nick,password))
+            conn.commit()
+            print(cursor.lastrowid)
+        except:
+            conn.rollback()
+        
+
+    # CREATE TABLE IF NOT EXISTS info(
+    #    id INT NOT NULL AUTO_INCREMENT,
+    #    nick VARCHAR(20) NOT NULL,
+    #    password VARCHAR(20) NOT NULL,
+    #    PRIMARY KEY ( id )
+    # );
+
     cursor.close()
     conn.close()
 
+def signal_handler(sig, frame):
+        print('BYE BYE')
+        SOCKET.close()
+        sys.exit(0)
 if __name__ == "__main__":
-    SERVER.listen(5)  # Listens for 5 connections at max.
+
+    SOCKET.listen(5)  # Listens for 5 connections at max.
     print("Waiting for connection...")
     ACCEPT_THREAD = Thread(target=connection)
+    signal.signal(signal.SIGINT, signal_handler)
     ACCEPT_THREAD.start()  # Starts the infinite loop.
     ACCEPT_THREAD.join()
-    SERVER.close()
+    SOCKET.close()
 
 
