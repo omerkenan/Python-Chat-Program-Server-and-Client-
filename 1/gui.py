@@ -18,6 +18,7 @@ class Gui(QtWidgets.QWidget):
         self.chat = QtWidgets.QTextEdit()
         self.chat.setReadOnly(True)
         self.listWidget1.setFixedWidth(100)
+        self.listWidget1.setMinimumWidth(30)
         self.textBox = QtWidgets.QLineEdit(self)
         self.nick_box = QtWidgets.QLineEdit("name")
         self.password_box = QtWidgets.QLineEdit("password")
