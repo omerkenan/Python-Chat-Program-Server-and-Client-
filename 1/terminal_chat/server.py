@@ -1,10 +1,5 @@
-import sys, socket, json
+import sys, socket, json, signal, sys
 from threading import Thread
-import signal
-import sys
-from mysql_dbconfig import read_db_config
-from mysql.connector import MySQLConnection, Error
-from pprint import pprint
 
 clients = {}
 addresses = {}
@@ -12,7 +7,7 @@ names = []
 
 
 HOST = '127.0.0.1'
-PORT = 33000
+PORT = 32000
 lim = 2048
 ADDR = (HOST, PORT)
 SOCKET = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  
@@ -23,38 +18,26 @@ def connection():
     while True:
         client, client_address = SOCKET.accept()
         print("{}:{} made connection request.".format(client_address[0],client_address[1])) 
-        
-        #broadcast(bytes("joined the chat!", "utf-8"))
-        
         Thread(target=handle_client, args=(client,)).start()
 
 def handle_client(client):
     info = client.recv(lim).decode("utf-8").split(",")
     name = info[0]
     password = info[1]
-
     db_first_or_create(name, password)
-
-    print(name)
     clients[client] = name
     client.send(bytes("hiiiiii","utf-8"))
     names.append(clients[client])
     while True:
         try:     
             msg = client.recv(lim)
-            print(msg)
-            if msg == bytes("USERS?","utf-8"):
-                real_list = json.dumps(names)
-                string_list = bytes("USERS!","utf-8") + bytes(real_list,"utf-8")
-                broadcast(string_list)
-            if msg == bytes("...quit...", "utf-8"):
-                client.send(bytes("...quit...","utf-8"))
+            if msg == "exit":
                 client.close()
                 del clients[client]
-                broadcast(bytes("{} has eft the chat.".format(name),"utf-8"))
-                break
             else:
+                print(msg)
                 broadcast(msg,name + ": ",exclude=client)
+
         except OSError:
             break
 
